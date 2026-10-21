@@ -561,7 +561,7 @@ const STEPS = { live: ['1. お題を出す', '2. 予想を入れる', '3. めく
 
 // /view/ へ送る（kit の KKit.live。同じブラウザの中だけ）。正解はめくったあとだけ送る
 const LIVE = KKit.live({ ch: 'kkp-monosashi', role: 'op' });
-let RES = { pending: false, save() {}, clear() {} };   // 続きから（配信の2つだけ。init で作る）
+let RES = { pending: false, save() {}, clear() {}, dismiss() { return false; } };   // 続きから（配信の2つだけ。init で作る）
 function viewState() {
   const s = st, inRound = s.phase !== 'idle' && s.phase !== 'end', o = { title: titleText(), mode: s.mode, phase: s.phase, round: s.round, rounds: ROUNDS, total: s.total };
   if (inRound) {
@@ -581,6 +581,7 @@ function sendView() {
 $('#viewBar').addEventListener('k-view-open', () => track('mono_view_open'));
 
 function newRound() {
+  RES.dismiss();   // 続きからを選ばずに始めたら、前回の分を消して表示ページへの送りを戻す（kit の R.dismiss）
   st.round++; st.ti = nextTopic(); st.target = rint(6, 94); st.near = null; st.hint = '';
   $('#oHint').value = ''; $('#oNear').value = ''; $('#oNum').value = '';
   if (st.mode === 'live') { st.guess = null; st.phase = 'guess'; }

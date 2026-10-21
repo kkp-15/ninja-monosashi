@@ -88,6 +88,38 @@
 .qr-small{position:absolute;right:var(--k-v-pad);top:calc(var(--k-v-pad)*.6);width:21cqw;z-index:4;text-align:center}
 .qr-small .k{font-size:var(--k-v-min);color:var(--k-text-2);font-weight:800;margin-top:max(4px,.5cqw);line-height:1.2}
 .qr-small b{display:block;font-family:var(--k-head);font-size:var(--k-v-m);font-weight:800;letter-spacing:0;line-height:1.15;white-space:nowrap}
+/* 縦型（?layout=v・9:16。kit の KKit.view が body.vert を付ける）: 並べ方だけ。ヒントと両端は2行まで、ものさしは太く、結果は折り返して並べる */
+body.vert .k-view-body{display:flex;flex-direction:column;justify-content:space-between;gap:max(6px,1.6cqw)}
+body.vert .ms-mid{flex:none}
+body.vert .ms-guessrow{flex:none;height:calc(var(--k-v-min)*1.3 + max(10px,2cqw))}
+body.vert .ms-glabel{bottom:max(6px,1.4cqw)}
+body.vert .ms-hint{flex-direction:column;align-items:center;gap:0;text-align:center}
+body.vert .ms-hint b,body.vert .ms-hint b.rule{font-size:var(--k-v-min);white-space:normal}
+body.vert .ms-bar{--k-ruler-u:calc(17cqw/96);height:17cqw}
+body.vert .ms-ends{flex-direction:column;align-items:stretch;gap:0}
+body.vert .ms-ends span{max-width:none;font-size:var(--k-v-min)}
+body.vert .ms-ends .mid{display:none}
+/* 入らないときに外す行（KKit.view.fit の drop が d1→d2→d3 の順に付ける） */
+.d1 .ms-call,.d1 .ms-hint .k{display:none!important}
+.d2 .ms-ranges{display:none!important}
+.d3 .ms-res .sa,.d3 .ms-hint b.rule{display:none!important}
+body.vert .ms-res{flex-wrap:wrap;gap:max(8px,2.4cqw) max(10px,3cqw)}
+body.vert .ms-res .k-stamp{width:max(84px,18cqw);height:max(84px,18cqw);font-size:var(--k-v-min)}
+body.vert .ms-ranges{flex-basis:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:0 max(10px,3cqw)}
+body.vert .ms-end{align-items:center;text-align:center;padding:0 var(--k-v-pad)}
+body.vert .ms-end .k-result b{font-size:max(42px,12cqw);white-space:nowrap}
+body.vert .ms-end .k-result b small{font-size:var(--k-v-min)}
+body.vert .ms-end .k-stamp{position:static;margin:0;width:max(110px,26cqw);height:max(110px,26cqw);font-size:max(42px,7cqw)}
+body.vert .ms-end p{max-width:none}
+body.vert .qr-big{flex-direction:column;justify-content:center;gap:max(8px,3cqw);text-align:center}
+body.vert .qr-big .qrbox{width:min(56cqw,30cqh)}
+body.vert .qr-big .qtx{flex:none;width:100%}
+body.vert .qr-big .pass b{font-size:max(42px,12cqw)}
+body.vert .withqr .k-view-body{padding-right:var(--k-v-pad)}
+body.vert .withqr .ms-mid{justify-content:flex-start}
+body.vert .qr-small{top:auto;bottom:calc(var(--k-v-pad)*.6);left:var(--k-v-pad);right:var(--k-v-pad);width:auto;display:flex;align-items:center;justify-content:center;gap:max(10px,3cqw)}
+body.vert .qr-small .qrbox{flex:none;width:min(36cqw,22cqh)}
+body.vert .qr-small .k{margin:0}
 </style>
 </head>
 <body class="k-view">
@@ -127,17 +159,31 @@
   var span = function (t, d) { return clamp(t - d, 0, 100) + '〜' + clamp(t + d, 0, 100); };
   var score = function (d) { return d <= 3 ? 4 : d <= 8 ? 3 : d <= 14 ? 2 : 0; };
   var ADDR = 'monosashi.kkpwebninja.com/a', QR_BASE = 'https://monosashi.kkpwebninja.com/a/#';
-  var V = KKit.view({ ch: 'kkp-monosashi' });
+  var V = KKit.view({ ch: 'kkp-monosashi' }), VERT = V.vert(), LN = VERT ? 2 : 1;   // 縦型はヒント・両端を2行まで
+  if (VERT) document.querySelector('#sBar .k-ruler-cover>span').textContent = 'かくれています';   // 縦型は幅が狭いので幕の字を短く
   var S = null, last = {}, qrFor = '', qrSvg = '';
   function set(id, key, html) { if (last[id] === key) return false; last[id] = key; $(id).innerHTML = html; return true; }
   function fitAll() {
     KKit.fitText($('sName'), { min: 42 });
-    KKit.fitText($('sHint'), { min: 42 });
-    KKit.fitText($('sL'), { min: 42 }); KKit.fitText($('sR'), { min: 42 });
+    KKit.fitText($('sHint'), { min: 42, lines: LN });
+    KKit.fitText($('sL'), { min: 42, lines: LN }); KKit.fitText($('sR'), { min: 42, lines: LN });
     var p = document.querySelector('#sQrBig .q1'); if (p) KKit.fitText(p, { min: 42 });
     var c = document.querySelector('#sQrSmall b'); if (c && !$('sQrSmall').hidden) KKit.fitText(c, { min: 42 });
   }
 
+  // 大きいQRの画面: 1画面に入らなければ（縦型の小さい窓）残り秒数 → 決まりの行の順に外す（kit の KKit.view.fit）
+  function fitQr() { var b = $('sQrBig'); if (b.hidden) return; V.fit(b, { min: 1, drop: ['.left', '.rule'], after: function () { var p = b.querySelector('.q1'); if (p) KKit.fitText(p, { min: 42 }); } }); }
+  // 本文を1画面に（縦型の小さい窓など）: 入らなければ補助の行を順に隠す（kit の KKit.view.fit）。id で描き直す要素なので消さずに隠す
+  function step(c) { return function (b) { b.classList.add(c); return true; }; }
+  // 場面・窓の大きさが変わったときだけ測る（測る間は動きを止めるので、毎回やると判子の動きが頭から出直す）
+  var fitKey = '';
+  function fitBody() {
+    var s = S || {}, b = $('sBody'), k = [s.phase, s.round, s.mode, s.near, s.hint, innerWidth, innerHeight].join('|');
+    if (k === fitKey) return; fitKey = k;
+    b.classList.remove('d1', 'd2', 'd3');
+    if (b.scrollHeight <= b.clientHeight + 1 && b.scrollWidth <= b.clientWidth + 1) return;   // 入っていれば何もしない
+    V.fit(b, { min: 1, x: true, drop: [step('d1'), step('d2'), step('d3')] });
+  }
   function render() {
     var s = S;
     if (!s || s.phase === 'idle') { V.idle(true, s ? s.title : 'みんなのものさし'); return; }
@@ -163,12 +209,12 @@
 
     var bar = $('sBar');
     if (inRound) {
-      if ($('sL').textContent !== s.L || $('sR').textContent !== s.R) { $('sL').textContent = s.L; $('sR').textContent = s.R; KKit.fitText($('sL'), { min: 42 }); KKit.fitText($('sR'), { min: 42 }); }
+      if ($('sL').textContent !== s.L || $('sR').textContent !== s.R) { $('sL').textContent = s.L; $('sR').textContent = s.R; KKit.fitText($('sL'), { min: 42, lines: LN }); KKit.fitText($('sR'), { min: 42, lines: LN }); }
       var hk = $('sHintK'), hb = $('sHint');
       hk.hidden = self;
       if (self) { hb.textContent = '数字を使わずにヒントをコメント'; hb.className = 'rule'; }
       else { hk.textContent = 'ヒント'; hb.textContent = s.hint ? '「' + s.hint + '」' : 'ヒントを聞いてね'; hb.className = ''; }
-      KKit.fitText(hb, { min: 42 });
+      KKit.fitText(hb, { min: 42, lines: LN });
       var gl = $('sGlabel'), nd = $('sNeedle');
       if (s.guess != null) {
         gl.hidden = false; nd.hidden = false; nd.style.left = s.guess + '%';
@@ -195,6 +241,7 @@
       }
     }
     renderQr();
+    fitBody();
   }
 
   function renderQr() {
@@ -204,14 +251,14 @@
     if (!on) return;
     if (qrFor !== s.code) { qrFor = s.code; qrSvg = window.MO_QR(QR_BASE + s.code); last.sQrBig = last.sQrSmall = null; }
     var pass = s.code.slice(0, 3) + ' ' + s.code.slice(3);
-    if (set('sQrBig', 'b' + s.code, '<div class="qrbox">' + qrSvg + '</div><div class="qtx"><p class="q1">答えはスマホで見てね</p><p class="addr">' + ADDR + '</p><p class="pass">合言葉<b>' + pass + '</b></p><p class="rule">数字は書かずにヒント</p><p class="left" id="sQrLeft"></p></div>')) KKit.fitText(document.querySelector('#sQrBig .q1'), { min: 42 });
+    if (set('sQrBig', 'b' + s.code, '<div class="qrbox">' + qrSvg + '</div><div class="qtx"><p class="q1">答えはスマホで見てね</p><p class="addr">' + ADDR + '</p><p class="pass">合言葉<b>' + pass + '</b></p><p class="rule">数字は書かずにヒント</p><p class="left" id="sQrLeft"></p></div>')) fitQr();
     set('sQrSmall', 's' + s.code, '<div class="qrbox">' + qrSvg + '</div><div class="k">合言葉</div><b>' + pass + '</b>');
     if (!$('sQrSmall').hidden && renderQr.f !== s.code) { renderQr.f = s.code; KKit.fitText(document.querySelector('#sQrSmall b'), { min: 42 }); }
     if (big) { var l = $('sQrLeft'); if (l) l.textContent = 'あと' + Math.max(0, Math.ceil((s.qrUntil - Date.now()) / 1000)) + '秒で小さくなります'; }
   }
   setInterval(renderQr, 250);
-  window.addEventListener('resize', function () { clearTimeout(fitAll.t); fitAll.t = setTimeout(function () { render(); fitAll(); }, 120); });
-  if (document.fonts && document.fonts.ready) document.fonts.ready.then(fitAll);
+  // 字のデータが後から届いた・窓の大きさが変わった：描き直して字を収め直す（kit の KKit.view.refit）
+  KKit.view.refit(function () { last.sQrBig = null; render(); fitAll(); });   // 外した行も戻して組み直す
 
   // 操作画面から受け取る（同じブラウザの中だけ）
   KKit.live({ ch: 'kkp-monosashi', role: 'view', onState: function (st) { S = st; render(); } }).start();
