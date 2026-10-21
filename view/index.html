@@ -99,22 +99,18 @@ body.vert .ms-bar{--k-ruler-u:calc(17cqw/96);height:17cqw}
 body.vert .ms-ends{flex-direction:column;align-items:stretch;gap:0}
 body.vert .ms-ends span{max-width:none;font-size:var(--k-v-min)}
 body.vert .ms-ends .mid{display:none}
-/* 入らないときに外す行（KKit.view.fit の drop が d1→d2→d3 の順に付ける） */
-.d1 .ms-call,.d1 .ms-hint .k{display:none!important}
-.d2 .ms-ranges{display:none!important}
-.d3 .ms-res .sa,.d3 .ms-hint b.rule{display:none!important}
 body.vert .ms-res{flex-wrap:wrap;gap:max(8px,2.4cqw) max(10px,3cqw)}
 body.vert .ms-res .k-stamp{width:max(84px,18cqw);height:max(84px,18cqw);font-size:var(--k-v-min)}
 body.vert .ms-ranges{flex-basis:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:0 max(10px,3cqw)}
 body.vert .ms-end{align-items:center;text-align:center;padding:0 var(--k-v-pad)}
-body.vert .ms-end .k-result b{font-size:max(42px,12cqw);white-space:nowrap}
+body.vert .ms-end .k-result b{font-size:max(var(--k-v-min),12cqw);white-space:nowrap}
 body.vert .ms-end .k-result b small{font-size:var(--k-v-min)}
-body.vert .ms-end .k-stamp{position:static;margin:0;width:max(110px,26cqw);height:max(110px,26cqw);font-size:max(42px,7cqw)}
+body.vert .ms-end .k-stamp{position:static;margin:0;width:max(110px,26cqw);height:max(110px,26cqw);font-size:max(var(--k-v-min),7cqw)}
 body.vert .ms-end p{max-width:none}
 body.vert .qr-big{flex-direction:column;justify-content:center;gap:max(8px,3cqw);text-align:center}
 body.vert .qr-big .qrbox{width:min(56cqw,30cqh)}
 body.vert .qr-big .qtx{flex:none;width:100%}
-body.vert .qr-big .pass b{font-size:max(42px,12cqw)}
+body.vert .qr-big .pass b{font-size:max(var(--k-v-min),12cqw)}
 body.vert .withqr .k-view-body{padding-right:var(--k-v-pad)}
 body.vert .withqr .ms-mid{justify-content:flex-start}
 body.vert .qr-small{top:auto;bottom:calc(var(--k-v-pad)*.6);left:var(--k-v-pad);right:var(--k-v-pad);width:auto;display:flex;align-items:center;justify-content:center;gap:max(10px,3cqw)}
@@ -172,17 +168,17 @@ body.vert .qr-small .k{margin:0}
   }
 
   // 大きいQRの画面: 1画面に入らなければ（縦型の小さい窓）残り秒数 → 決まりの行の順に外す（kit の KKit.view.fit）
-  function fitQr() { var b = $('sQrBig'); if (b.hidden) return; V.fit(b, { min: 1, drop: ['.left', '.rule'], after: function () { var p = b.querySelector('.q1'); if (p) KKit.fitText(p, { min: 42 }); } }); }
-  // 本文を1画面に（縦型の小さい窓など）: 入らなければ補助の行を順に隠す（kit の KKit.view.fit）。id で描き直す要素なので消さずに隠す
-  function step(c) { return function (b) { b.classList.add(c); return true; }; }
-  // 場面・窓の大きさが変わったときだけ測る（測る間は動きを止めるので、毎回やると判子の動きが頭から出直す）
+  // hide: 消さずに隠す（#sQrLeft は残り秒数を id で毎回書き直すので、消すと戻らない）
+  function fitQr() { var b = $('sQrBig'); if (b.hidden) return; V.fit(b, { min: 1, hide: true, drop: ['.left', '.rule'], after: function () { var p = b.querySelector('.q1'); if (p) KKit.fitText(p, { min: 42 }); } }); }
+  // 本文を1画面に（縦型の小さい窓など）: 入らなければ補助の行を順に隠す（kit の KKit.view.fit の hide: id で描き直す要素なので消さずに隠す）
+  var DROP = ['.ms-call', '.ms-hint .k', '.ms-ranges', '.ms-res .sa', '.ms-hint b.rule'];
+  // 場面・背景・窓の大きさが変わったときだけ測る（測る間は動きを止めるので、毎回やると判子の動きが頭から出直す）
   var fitKey = '';
   function fitBody() {
-    var s = S || {}, b = $('sBody'), k = [s.phase, s.round, s.mode, s.near, s.hint, innerWidth, innerHeight].join('|');
+    var s = S || {}, b = $('sBody'), k = [s.phase, s.round, s.mode, s.near, s.hint, innerWidth, innerHeight, document.documentElement.getAttribute('data-k-bg')].join('|');
     if (k === fitKey) return; fitKey = k;
-    b.classList.remove('d1', 'd2', 'd3');
-    if (b.scrollHeight <= b.clientHeight + 1 && b.scrollWidth <= b.clientWidth + 1) return;   // 入っていれば何もしない
-    V.fit(b, { min: 1, x: true, drop: [step('d1'), step('d2'), step('d3')] });
+    // 測るのは kit に任せる（出てくる動きの途中で測ると入っているように見えて外しそこねるので、自前で先に測らない）
+    V.fit(b, { min: 1, x: true, hide: true, drop: DROP });
   }
   function render() {
     var s = S;
