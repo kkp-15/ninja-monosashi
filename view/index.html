@@ -10,13 +10,14 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
 <script src="/js/qr.js"></script>
 <style>
 /* OBS のウィンドウキャプチャで取り込む表示ページ。操作画面（同じブラウザ）から BroadcastChannel で受け取って描くだけ。
    16:9 の画面をウィンドウいっぱいに置く。字はすべて画面の幅の 2.2% 以上（1920幅で42px＝1/3に縮めても14px相当） */
 :root{
   --screen:#fff7ea; --ink:#1f1a17; --ink2:#4a3f37; --line:#ead9bf; --sumi:#1f1a17; --on-sumi:#fffdf8;
-  --or:#ff8a3d; --or-d:#a9430b; --shu:#c93b23; --bar1:#f6efe4; --bar2:#ffe0c2; --z2:#ffd2a8; --z3:#ff9f5c; --z4:#a9430b;
+  --or:#ff8a3d; --or-d:#a9430b; --shu:#c93b23;
 }
 [hidden]{display:none!important}
 *{box-sizing:border-box}
@@ -30,23 +31,16 @@ body{color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN
 .scr-score{flex:none;margin-left:auto;font-weight:800;white-space:nowrap}
 .scr-body{position:absolute;left:0;right:0;top:7cqw;bottom:0;padding:1.6cqw 3cqw}
 .screen.withqr .scr-body{right:23cqw;padding-right:1.6cqw}
-.ms-hint{display:flex;align-items:baseline;gap:2cqw;justify-content:center;height:8cqw}
+.ms-hint{display:flex;align-items:baseline;gap:2cqw;justify-content:center;height:7.2cqw}
 .ms-hint .k{flex:none;font-size:2.6cqw;color:var(--ink2);font-weight:700}
 .ms-hint b{font-size:5.2cqw;font-weight:800;line-height:1.2;max-width:62cqw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ms-hint b.rule{font-size:3.4cqw;color:var(--shu)}
-.ms-guessrow{position:relative;height:5.4cqw}
-.ms-glabel{position:absolute;bottom:.4cqw;transform:translateX(-50%);background:var(--sumi);color:var(--on-sumi);font-size:2.8cqw;font-weight:800;padding:.3cqw 1.4cqw;border-radius:.6cqw;white-space:nowrap;transition:left .35s}
-.ms-bar{position:relative;height:9cqw;border-radius:1.2cqw;background:linear-gradient(90deg,var(--bar1),var(--bar2));border:.3cqw solid var(--ink);overflow:hidden}
-.ms-tick{position:absolute;top:0;bottom:0;width:.2cqw;background:rgba(31,26,23,.3)}
-.ms-zone{position:absolute;top:0;bottom:0;transform:translateX(-50%) scaleX(0);transform-origin:center;font-weight:800;font-size:2.6cqw;color:var(--ink);transition:transform .45s cubic-bezier(.2,1.2,.4,1)}
-.ms-zone.z2{background:var(--z2)}.ms-zone.z3{background:var(--z3)}.ms-zone.z4{background:var(--z4);color:#fff}
-.ms-zone span{position:absolute;top:.6cqw;transform:translateX(-50%)}
-.ms-zone.z4 span{left:50%}.ms-zone.z3 span{left:14.7%}.ms-zone.z2 span{left:10.3%}
-.revealed .ms-zone{transform:translateX(-50%) scaleX(1)}
-.revealed .ms-zone.z3{transition-delay:.12s}.revealed .ms-zone.z4{transition-delay:.24s}
-.ms-cover{position:absolute;inset:0;background:var(--sumi);color:var(--on-sumi);display:grid;place-items:center;font-size:2.8cqw;font-weight:700;transition:transform .55s cubic-bezier(.6,0,.3,1);z-index:2}
-.revealed .ms-cover{transform:translateY(-105%)}
-.ms-needle{position:absolute;top:-.3cqw;bottom:-.3cqw;width:.7cqw;background:var(--sumi);transform:translateX(-50%);z-index:3;transition:left .35s;box-shadow:0 0 0 .25cqw var(--screen)}
+.ms-guessrow{position:relative;height:6.2cqw}
+.ms-glabel{position:absolute;bottom:2.1cqw;transform:translateX(-50%);background:var(--sumi);color:var(--on-sumi);font-size:2.8cqw;font-weight:800;padding:.3cqw 1.4cqw;border-radius:.6cqw;white-space:nowrap;transition:left .35s}
+.ms-bar{--k-ruler-u:calc(9cqw/96);height:9cqw}   /* 見た目は kit の k-ruler（竹のものさし・点の帯・予想の針・墨の幕） */
+.ms-bar .k-ruler-needle{transition:left .35s}
+.ms-bar .k-ruler-zone>b{font-size:2.6cqw;font-family:inherit;font-weight:800}
+.ms-bar .k-ruler-cover>span{font-size:2.8cqw}
 .ms-ends{display:flex;justify-content:space-between;align-items:baseline;gap:2cqw;margin-top:1cqw}
 .ms-ends span{font-size:4cqw;font-weight:800;max-width:38cqw;line-height:1.2}
 .ms-ends .mid{flex:none;font-size:2.4cqw;color:var(--ink2);font-weight:700}
@@ -99,13 +93,15 @@ body{color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN
     <div class="ms-hint"><span class="k" id="sHintK">ヒント</span><b id="sHint"></b></div>
     <div class="ms-guessrow"><span class="ms-glabel" id="sGlabel" hidden></span></div>
     <div id="sBarWrap">
-      <div class="ms-bar">
-        <div class="ms-zone z2" id="z2"><span>2</span></div>
-        <div class="ms-zone z3" id="z3"><span>3</span></div>
-        <div class="ms-zone z4" id="z4"><span>4</span></div>
-        <div class="ms-tick" style="left:25%"></div><div class="ms-tick" style="left:50%"></div><div class="ms-tick" style="left:75%"></div>
-        <div class="ms-needle" id="sNeedle" hidden></div>
-        <div class="ms-cover">正解はかくれています</div>
+      <div class="ms-bar k-ruler">
+        <div class="k-ruler-face">
+          <i class="k-ruler-zone k-ruler-z2" id="z2"><b>2</b></i>
+          <i class="k-ruler-zone k-ruler-z3" id="z3"><b>3</b></i>
+          <i class="k-ruler-zone k-ruler-z4" id="z4"><b>4</b></i>
+          <i class="k-ruler-mark" id="zMark"></i>
+        </div>
+        <i class="k-ruler-needle" id="sNeedle" hidden></i>
+        <div class="k-ruler-cover"><span>正解はかくれています</span></div>
       </div>
     </div>
     <div class="ms-ends"><span id="sL">0</span><span class="mid">50</span><span class="r" id="sR">100</span></div>
@@ -166,7 +162,8 @@ body{color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN
       } else { gl.hidden = true; nd.hidden = true; }
       if (ph === 'reveal' && s.target != null) {
         ['z2', 'z3', 'z4'].forEach(function (id, i) { var e = $(id); e.style.left = s.target + '%'; e.style.width = [29, 17, 7][i] + '%'; });
-        if (!wrap.classList.contains('revealed')) { void wrap.offsetWidth; setTimeout(function () { wrap.classList.add('revealed'); }, 30); }
+        $('zMark').style.left = s.target + '%';
+        if (!wrap.classList.contains('k-open')) { void wrap.offsetWidth; setTimeout(function () { wrap.classList.add('k-open'); }, 30); }
         var d = Math.abs(s.guess - s.target), p = score(d), k = s.round + ':' + s.target + ':' + s.guess;
         set('sRes', k, '<span class="fadeup" style="animation-delay:.5s">正解 ' + s.target + ' ・ 差 ' + d + ' → <span class="pt">' + (p ? p + '点' : '0点 おしい') + '</span></span>');
         if (!self) {
@@ -175,12 +172,12 @@ body{color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN
           set('sNear', k + ':' + s.near, s.near != null ? '<span class="fadeup">いちばん近い予想 ' + s.near + '！</span>' : '');
         } else { set('sRanges', '', ''); set('sCall', '', ''); set('sNear', '', ''); }
       } else {
-        wrap.classList.remove('revealed');
+        wrap.classList.remove('k-open');
         ['z2', 'z3', 'z4'].forEach(function (id) { $(id).style.left = '50%'; });
         set('sRes', '', ''); set('sRanges', '', ''); set('sCall', '', ''); set('sNear', '', '');
       }
     } else {
-      wrap.classList.remove('revealed');
+      wrap.classList.remove('k-open');
       $('sGlabel').hidden = true; $('sNeedle').hidden = true;
     }
     renderQr();

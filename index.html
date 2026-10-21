@@ -95,7 +95,7 @@
 *{box-sizing:border-box}
 body{margin:0;background:var(--k-surface)}
 button,input,select{font:inherit;color:inherit}
-:root{--bar1:#f6efe4;--bar2:#ffe0c2;--z2:#ffd2a8;--z3:#ff9f5c;--z4:#a9430b;--ord:#a9430b}
+:root{--ord:#a9430b}
 .mo-wrap{max-width:720px;margin:0 auto;padding:0 16px}
 .mo-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:2px solid var(--k-sumi)}
 .mo-top>a{color:var(--k-sumi);text-decoration:none;font-family:var(--k-bold);font-size:16px;letter-spacing:.06em}
@@ -117,17 +117,8 @@ h1.mo-h1{margin:20px 0 6px;font-family:var(--k-brush);font-weight:400;font-size:
 .txt:focus,.sel:focus{outline:4px double var(--k-shu);outline-offset:2px}
 .linkbtn{background:none;border:0;padding:0 4px;min-height:44px;color:var(--k-text-2);text-decoration:underline;font-size:14px;cursor:pointer}
 
-/* ---- ものさし（目盛り） ---- */
-.ms-tick{position:absolute;top:0;bottom:0;width:2px;background:rgba(31,26,23,.3)}
-.ms-zone{position:absolute;top:0;bottom:0;transform:translateX(-50%) scaleX(0);transform-origin:center;font-weight:800;font-size:15px;transition:transform .45s cubic-bezier(.2,1.2,.4,1)}
-.ms-zone.z2{background:var(--z2)}.ms-zone.z3{background:var(--z3)}.ms-zone.z4{background:var(--z4);color:#fff}
-.ms-zone span{position:absolute;top:6px;transform:translateX(-50%)}
-.ms-zone.z4 span{left:50%}.ms-zone.z3 span{left:14.7%}.ms-zone.z2 span{left:10.3%}
-.revealed .ms-zone{transform:translateX(-50%) scaleX(1)}
-.revealed .ms-zone.z3{transition-delay:.12s}.revealed .ms-zone.z4{transition-delay:.24s}
-.ms-cover{position:absolute;inset:0;background:var(--k-sumi);color:#fffdf8;display:grid;place-items:center;font-size:16px;font-weight:700;transition:transform .55s cubic-bezier(.6,0,.3,1);z-index:2}
-.revealed .ms-cover{transform:translateY(-105%)}
-.ms-needle{position:absolute;top:0;bottom:0;width:8px;border-radius:4px;background:var(--k-sumi);transform:translateX(-50%);z-index:3;box-shadow:0 0 0 3px #fffdf8}
+/* ---- ものさし（目盛り）。見た目は kit の k-ruler（竹のものさし・点の帯・予想の針・墨の幕）。ここは大きさと置き方だけ ---- */
+.k-ruler-cover>span{font-size:16px}
 @keyframes fadeUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
 .fadeup{display:inline-block;animation:fadeUp .4s ease both}
 
@@ -158,9 +149,9 @@ h1.mo-h1{margin:20px 0 6px;font-family:var(--k-brush);font-weight:400;font-size:
 .rb-ends{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin-bottom:8px}
 .rb-ends span{font-size:20px;font-weight:800;line-height:1.3;max-width:48%}
 .rb-ends .r{text-align:right}
-.rb-bar{position:relative;height:96px;border:2.5px solid var(--k-sumi);border-radius:12px;background:linear-gradient(90deg,var(--bar1),var(--bar2));overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.rb-bar{height:96px;margin-top:22px;touch-action:none}
 .rb-bar.live{cursor:grab}
-.rb-bar .grip{position:absolute;bottom:8px;transform:translateX(-50%);z-index:3;background:#fffdf8;color:var(--k-sumi);border:2px solid var(--k-sumi);border-radius:999px;font-size:14px;font-weight:800;padding:1px 10px;white-space:nowrap;pointer-events:none}
+.rb-bar .grip{position:absolute;bottom:8px;transform:translateX(-50%);z-index:7;background:#fffdf8;color:var(--k-sumi);border:2px solid var(--k-sumi);border-radius:999px;font-size:14px;font-weight:800;padding:1px 10px;white-space:nowrap;pointer-events:none}
 .rb-bar:focus-visible,.oslider:focus-visible{outline:4px double var(--k-shu);outline-offset:3px}
 .rb-scale{display:flex;justify-content:space-between;font-size:14px;color:var(--k-text-2);margin-top:4px}
 .rb-big{text-align:center;font-size:24px;font-weight:800;margin-top:14px;line-height:1.35}
@@ -198,18 +189,15 @@ body.stream .mo-modes>button{min-height:52px;padding:4px 12px}
 .secret small{display:block;font-size:14px;color:var(--k-text-2);margin-top:2px}
 .secret.blind{background:#efe7da}
 .secret .ans{font-family:var(--k-bold);font-size:24px;color:var(--ord)}
-.mini{position:relative;height:28px;border:2px solid var(--k-sumi);border-radius:6px;overflow:hidden;background:#fffdf8;margin:6px 0 2px}
-.mini i{position:absolute;top:0;bottom:0;transform:translateX(-50%)}
-.mini .m2{background:var(--z2)}.mini .m3{background:var(--z3)}.mini .m4{background:var(--z4)}
+.mini{--k-ruler-u:.42px;height:40px;margin:8px 0 2px}
+.mini .k-ruler-zone>b{display:none}
 .mini-ends{display:flex;justify-content:space-between;gap:8px;font-size:14px;color:var(--k-text-2)}
 .qrstate{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .qrstate p{margin:0;font-size:15px;line-height:1.5}
 .qrstate p b{font-family:var(--k-bold);font-weight:400;font-size:22px;letter-spacing:.08em;margin-left:6px}
 .qrstate .k-btn-sm{min-height:48px;font-size:16px}
-.oslider{position:relative;height:60px;border:2.5px solid var(--k-sumi);border-radius:10px;background:linear-gradient(90deg,var(--bar1),var(--bar2));touch-action:none;cursor:pointer;margin-top:4px}
+.oslider{--k-ruler-u:.625px;height:60px;touch-action:none;cursor:pointer;margin-top:18px}
 .oslider.off{opacity:.5;cursor:default}
-.oslider .ndl{position:absolute;top:-4px;bottom:-4px;width:8px;background:var(--k-sumi);border-radius:4px;transform:translateX(-50%);box-shadow:0 0 0 2px #fffdf8}
-.oslider .ndl.unset{background:#9a8e82}
 .manual{display:flex;gap:8px;margin-top:8px}
 .manual .txt{width:120px;flex:none;font-size:20px;font-weight:800;text-align:center}
 .manual .k-btn-sm{min-height:48px}
@@ -276,14 +264,16 @@ body.stream .mo-modes>button{min-height:52px;padding:4px 12px}
       <div id="rBoard" hidden>
         <p class="rb-who" id="rWho"></p>
         <div class="rb-ends"><span id="rL"></span><span class="r" id="rR"></span></div>
-        <div class="rb-bar" id="rbBar" role="slider" aria-label="みんなの予想の位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="-1">
-          <div class="ms-zone z2" id="rz2"><span>2</span></div>
-          <div class="ms-zone z3" id="rz3"><span>3</span></div>
-          <div class="ms-zone z4" id="rz4"><span>4</span></div>
-          <div class="ms-tick" style="left:25%"></div><div class="ms-tick" style="left:50%"></div><div class="ms-tick" style="left:75%"></div>
-          <div class="ms-needle" id="rNeedle" hidden></div>
+        <div class="rb-bar k-ruler" id="rbBar" role="slider" aria-label="みんなの予想の位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="-1">
+          <div class="k-ruler-face">
+            <i class="k-ruler-zone k-ruler-z2" id="rz2"><b>2</b></i>
+            <i class="k-ruler-zone k-ruler-z3" id="rz3"><b>3</b></i>
+            <i class="k-ruler-zone k-ruler-z4" id="rz4"><b>4</b></i>
+            <i class="k-ruler-mark" id="rMark"></i>
+          </div>
+          <i class="k-ruler-needle" id="rNeedle" hidden></i>
           <div class="grip" id="rGrip" hidden>50</div>
-          <div class="ms-cover" id="rCover">正解はかくれています</div>
+          <div class="k-ruler-cover" id="rCover"><span>正解はかくれています</span></div>
         </div>
         <div class="rb-scale"><span>0</span><span>50</span><span>100</span></div>
         <div class="rb-big" id="rBig"></div>
@@ -323,9 +313,9 @@ body.stream .mo-modes>button{min-height:52px;padding:4px 12px}
     <div class="op">
       <section>
         <span class="lbl" id="oGuessLbl">みんなの予想（コメントを見て入れる）</span>
-        <div class="oslider off" id="oSlider" role="slider" aria-label="予想の位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
-          <div class="ms-tick" style="left:25%"></div><div class="ms-tick" style="left:50%"></div><div class="ms-tick" style="left:75%"></div>
-          <div class="ndl unset" id="oNdl" style="left:50%"></div>
+        <div class="oslider off k-ruler" id="oSlider" role="slider" aria-label="予想の位置" aria-valuemin="0" aria-valuemax="100" aria-valuenow="50" tabindex="0">
+          <div class="k-ruler-face"></div>
+          <i class="k-ruler-needle k-off" id="oNdl" style="left:50%"></i>
         </div>
         <div class="mini-ends"><span id="oSL">0</span><span>50</span><span id="oSR">100</span></div>
         <div class="nudge" style="margin-top:8px"><button class="k-btn k-btn-sub" type="button" data-d="-1" aria-label="1つ左へ">−1</button><output id="oVal">予想<b>−</b></output><button class="k-btn k-btn-sub" type="button" data-d="1" aria-label="1つ右へ">＋1</button></div>
@@ -421,7 +411,7 @@ const titleText = () => (String(store.get(TKEY) || '').trim() || 'みんな') + 
 // ---- 目盛りを指・マウスで動かす（ドラッグ・キー） ----
 function makeSlider(el, get, set, active) {
   let drag = false;
-  const at = e => { const r = el.getBoundingClientRect(); return clamp(Math.round((e.clientX - r.left) / r.width * 100), 0, 100); };
+  const at = e => { const r = el.getBoundingClientRect(), w = el.clientWidth || r.width; return clamp(Math.round((e.clientX - r.left - el.clientLeft) / w * 100), 0, 100); };   // 竹のふちの内側が 0〜100
   el.addEventListener('pointerdown', e => { if (!active()) return; drag = true; try { el.setPointerCapture(e.pointerId); } catch (_) {} set(at(e)); e.preventDefault(); });
   el.addEventListener('pointermove', e => { if (drag && active()) set(at(e)); });
   const end = () => { drag = false; };
@@ -511,8 +501,8 @@ function renderRoom() {
   }
   if (p === 'peek' || p === 'guess' || p === 'reveal') {
     $('#rL').textContent = L; $('#rR').textContent = Rt;
-    zonesAt(['rz2', 'rz3', 'rz4'], R.t);
-    bar.classList.toggle('revealed', p !== 'guess');
+    zonesAt(['rz2', 'rz3', 'rz4'], R.t); $('#rMark').style.left = R.t + '%';
+    bar.classList.toggle('k-open', p !== 'guess');
     $('#rCover').hidden = p === 'peek';
     $('#rNeedle').hidden = p === 'peek'; $('#rGrip').hidden = p === 'peek';
     if (p === 'peek') {
@@ -641,7 +631,7 @@ function renderStage() {
         : `<strong>${esc(L)} 〜 ${esc(Rt)}</strong><small>答えはあなたには出ません。コメントのヒントで当ててね。</small>`;
     } else {
       sec.className = 'secret';
-      sec.innerHTML = `<strong>${esc(L)} 〜 ${esc(Rt)}</strong><div class="mini"><i class="m2" style="left:${s.target}%;width:29%"></i><i class="m3" style="left:${s.target}%;width:17%"></i><i class="m4" style="left:${s.target}%;width:7%"></i></div><div class="mini-ends"><span>0</span><span>50</span><span>100</span></div><small>正解は <span class="ans">${s.target}</span>（あなただけに見えています）</small>`;
+      sec.innerHTML = `<strong>${esc(L)} 〜 ${esc(Rt)}</strong><div class="mini k-ruler k-open"><div class="k-ruler-face"><i class="k-ruler-zone k-ruler-z2" style="left:${s.target}%;width:29%"></i><i class="k-ruler-zone k-ruler-z3" style="left:${s.target}%;width:17%"></i><i class="k-ruler-zone k-ruler-z4" style="left:${s.target}%;width:7%"></i><i class="k-ruler-mark" style="left:${s.target}%"></i></div></div><div class="mini-ends"><span>0</span><span>50</span><span>100</span></div><small>正解は <span class="ans">${s.target}</span>（あなただけに見えています）</small>`;
     }
     $('#oSL').textContent = L; $('#oSR').textContent = Rt;
   } else {
@@ -654,7 +644,7 @@ function renderStage() {
   $('#oNum').disabled = !can; $('#oNumBtn').disabled = !can;
   document.querySelectorAll('#stage .nudge button').forEach(b => { b.disabled = !can; });
   $('#oSlider').classList.toggle('off', !can);
-  const nd = $('#oNdl'); nd.style.left = (s.guess ?? 50) + '%'; nd.classList.toggle('unset', s.guess == null);
+  const nd = $('#oNdl'); nd.style.left = (s.guess ?? 50) + '%'; nd.classList.toggle('k-off', s.guess == null);
   $('#oSlider').setAttribute('aria-valuenow', s.guess ?? 50);
   $('#oVal').innerHTML = `予想<b>${s.guess ?? '−'}</b>`;
   $('#oNearBox').hidden = !(s.mode === 'live' && s.phase === 'reveal');

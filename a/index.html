@@ -54,12 +54,8 @@ body{margin:0}
 .ends{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:8px 0}
 .ends span{font-size:20px;font-weight:800;line-height:1.3;max-width:48%}
 .ends .r{text-align:right}
-.bar{position:relative;height:72px;border:2.5px solid var(--k-sumi);border-radius:12px;background:linear-gradient(90deg,#f6efe4,#ffe0c2);overflow:hidden}
-.bar i{position:absolute;top:0;bottom:0;transform:translateX(-50%);font-style:normal;font-weight:800;font-size:15px}
-.bar .z2{background:#ffd2a8}.bar .z3{background:#ff9f5c}.bar .z4{background:#a9430b;color:#fff}
-.bar i span{position:absolute;top:6px;transform:translateX(-50%)}
-.bar .z4 span{left:50%}.bar .z3 span{left:14.7%}.bar .z2 span{left:10.3%}
-.bar .tk{position:absolute;top:0;bottom:0;width:2px;background:rgba(31,26,23,.3)}
+.bar{--k-ruler-u:.75px;height:72px}   /* 見た目は kit の k-ruler（竹のものさし・点の帯） */
+.bar .k-ruler-zone>b{font-size:15px;font-family:inherit;font-weight:800}
 .scale{display:flex;justify-content:space-between;font-size:14px;color:var(--k-text-2);margin-top:4px}
 .bignum{text-align:center;font-size:72px;font-weight:800;color:#a9430b;line-height:1.1;margin:16px 0 4px;font-variant-numeric:tabular-nums}
 .bignum small{display:block;font-size:16px;color:var(--k-text-2);font-weight:700}
@@ -107,10 +103,10 @@ body{margin:0}
   }
   function show(a) {
     var L = T[a.ti][0], R = T[a.ti][1], t = a.t;
-    var z = function (c, w, n) { return '<i class="' + c + '" style="left:' + t + '%;width:' + w + '%"><span>' + n + '</span></i>'; };
+    var z = function (n, w) { return '<i class="k-ruler-zone k-ruler-z' + n + '" style="left:' + t + '%;width:' + w + '%"><b>' + n + '</b></i>'; };
     $('box').innerHTML = '<h1>' + esc(L) + ' 〜 ' + esc(R) + '</h1>'
       + '<div class="ends"><span>' + esc(L) + '</span><span class="r">' + esc(R) + '</span></div>'
-      + '<div class="bar">' + z('z2', 29, 2) + z('z3', 17, 3) + z('z4', 7, 4) + '<span class="tk" style="left:25%"></span><span class="tk" style="left:50%"></span><span class="tk" style="left:75%"></span></div>'
+      + '<div class="bar k-ruler k-open"><div class="k-ruler-face">' + z(2, 29) + z(3, 17) + z(4, 7) + '<i class="k-ruler-mark" style="left:' + t + '%"></i></div></div>'
       + '<div class="scale"><span>0</span><span>50</span><span>100</span></div>'
       + '<div class="bignum">' + t + '<small>正解の位置（0〜100）</small></div>'
       + '<p class="warn"><b>数字を書いたら反則。</b>数字を使わずに、コメントでヒントを出してね。</p>'

@@ -366,3 +366,61 @@ a.k-card:hover h3,a.k-card:focus-visible h3{text-decoration:underline;text-decor
 #installBanner div[style*="color:#ff8a3d"]{color:#a8501a!important}
 #installBanner #installBtn{color:#1f1a17!important}
 #installBanner #installCloseBtn{color:#5c5c5c!important}
+
+/* ---------- ものさし（k-ruler）2026-10-21 みんなのものさしで追加 ----------
+   竹の本体（img/k-ruler.webp）に、目盛り・点の帯・針・覆いを重ねる。絵に文字・数字はない（数字はサイトの HTML）。
+   大きさは --k-ruler-u（1単位。高さ96pxのとき1px）でまとめて変わる。高さはサイトで決める（例 height:96px）。
+   値 0〜100 は .k-ruler の内側（竹の面）の左端→右端。帯・針・印は style="left:62%" のように置く。
+   <div class="k-ruler" style="height:96px">
+     <div class="k-ruler-face">
+       <i class="k-ruler-zone k-ruler-z2" style="left:62%;width:29%"><b>2</b></i>  … z3（17%）・z4（7%）も同じ
+       <i class="k-ruler-mark" style="left:62%"></i>
+     </div>
+     <i class="k-ruler-needle" style="left:50%"></i>
+     <div class="k-ruler-cover"><span>正解はかくれています</span></div>
+   </div>
+   めくる: .k-ruler に .k-open を付ける → 幕が巻き上がる → 点の帯が開く → 正解の印が出る（1回だけ動いて止まる）。
+   覆いを使わないとき（答えの画面）は .k-ruler-cover を置かずに最初から .k-open。 */
+.k-ruler{--k-ruler-u:1px;--k-ruler-ink:rgba(31,26,23,.6);position:relative;box-sizing:border-box;height:calc(var(--k-ruler-u)*96);border-style:solid;border-width:calc(var(--k-ruler-u)*10) calc(var(--k-ruler-u)*13) calc(var(--k-ruler-u)*14) calc(var(--k-ruler-u)*10);border-image:url(img/k-ruler.webp) 30 40 42 30 fill / calc(var(--k-ruler-u)*10) calc(var(--k-ruler-u)*13) calc(var(--k-ruler-u)*14) calc(var(--k-ruler-u)*10) stretch;user-select:none;-webkit-user-select:none}
+.k-ruler-face{position:absolute;inset:0;overflow:hidden}
+/* 目盛り（5ごと・10ごと・25ごと・50）。上のふちから下へ */
+.k-ruler-face::after{content:"";position:absolute;inset:0;z-index:2;pointer-events:none;background:
+  linear-gradient(var(--k-ruler-ink),var(--k-ruler-ink)) 50% 0/calc(var(--k-ruler-u)*3) 44% no-repeat,
+  linear-gradient(90deg,var(--k-ruler-ink) 0 calc(var(--k-ruler-u)*2.5),transparent 0) calc(var(--k-ruler-u)*-1.25) 0/25% 32% repeat-x,
+  linear-gradient(90deg,var(--k-ruler-ink) 0 calc(var(--k-ruler-u)*2),transparent 0) calc(var(--k-ruler-u)*-1) 0/10% 22% repeat-x,
+  linear-gradient(90deg,var(--k-ruler-ink) 0 calc(var(--k-ruler-u)*1.5),transparent 0) calc(var(--k-ruler-u)*-.75) 0/5% 13% repeat-x}
+/* 点の帯（朱の筆の帯。2〜4点）。数字は下に置く */
+.k-ruler-zone{position:absolute;top:0;bottom:0;z-index:1;display:block;transform:translateX(-50%) scaleX(0);transform-origin:center;-webkit-mask:url(img/k-ruler-zone.webp) center/100% 100% no-repeat;mask:url(img/k-ruler-zone.webp) center/100% 100% no-repeat;font-style:normal;transition:transform .45s cubic-bezier(.2,1.2,.4,1)}
+.k-ruler-zone>b{position:absolute;bottom:calc(var(--k-ruler-u)*6);transform:translateX(-50%);font-family:var(--k-bold);font-weight:400;font-size:calc(var(--k-ruler-u)*17);line-height:1;color:var(--k-sumi)}
+.k-ruler-z2{background:rgba(255,138,61,.42)}.k-ruler-z2>b{left:10.3%}
+.k-ruler-z3{background:#f39a5e}.k-ruler-z3>b{left:14.7%}
+.k-ruler-z4{background:var(--k-shu)}.k-ruler-z4>b{left:50%;color:#fff}
+.k-open .k-ruler-zone{transform:translateX(-50%) scaleX(1)}
+.k-open .k-ruler-zone.k-ruler-z2{transition-delay:.42s}
+.k-open .k-ruler-zone.k-ruler-z3{transition-delay:.54s}.k-open .k-ruler-zone.k-ruler-z4{transition-delay:.66s}
+/* 正解の印（墨の細い線。上のふちから目盛りの長さまで＝下の点の数字にかからない）。めくったあとに出る */
+.k-ruler-mark{position:absolute;top:0;bottom:46%;z-index:3;width:calc(var(--k-ruler-u)*3);transform:translateX(-50%);background:var(--k-sumi);box-shadow:0 0 0 calc(var(--k-ruler-u)*1.5) var(--k-surface);opacity:0;transition:opacity .25s .9s}
+.k-open .k-ruler-mark{opacity:1}
+/* 予想の針（真鍮の玉＋朱の軸。玉は竹の上に少し出る。覆いより上＝隠れている間も動かせる） */
+.k-ruler-needle{position:absolute;z-index:6;top:calc(var(--k-ruler-u)*-22);bottom:calc(var(--k-ruler-u)*-6);width:calc(var(--k-ruler-u)*22);box-sizing:border-box;transform:translateX(-50%);border-style:solid;border-width:calc(var(--k-ruler-u)*23) 0 calc(var(--k-ruler-u)*36);border-image:url(img/k-ruler-needle.webp) 120 0 190 fill / calc(var(--k-ruler-u)*23) 0 calc(var(--k-ruler-u)*36) stretch;pointer-events:none}
+.k-ruler-needle.k-off{filter:grayscale(1) opacity(.55)}   /* まだ置いていない針 */
+/* 正解を隠す覆い（墨の布の幕。めくると下の朱の巻き軸ごと上へ巻き上がる） */
+.k-ruler-cover{position:absolute;z-index:5;left:calc(var(--k-ruler-u)*-12);right:calc(var(--k-ruler-u)*-12);top:calc(var(--k-ruler-u)*-8);bottom:calc(var(--k-ruler-u)*-4);display:grid;place-items:center;padding-bottom:calc(var(--k-ruler-u)*12);color:var(--k-surface);font-family:var(--k-body);font-weight:700;pointer-events:none}
+.k-ruler-cover::before{content:"";position:absolute;inset:0 0 calc(var(--k-ruler-u)*10);z-index:-1;border-style:solid;border-width:calc(var(--k-ruler-u)*8) calc(var(--k-ruler-u)*16) calc(var(--k-ruler-u)*2);border-image:url(img/k-ruler-cloth.webp) 30 56 4 fill / calc(var(--k-ruler-u)*8) calc(var(--k-ruler-u)*16) calc(var(--k-ruler-u)*2) stretch;clip-path:inset(0 0 0 0);transition:clip-path .6s cubic-bezier(.6,0,.3,1)}
+.k-ruler-cover::after{content:"";position:absolute;left:0;right:0;bottom:0;z-index:-1;height:calc(var(--k-ruler-u)*16);border-style:solid;border-width:0 calc(var(--k-ruler-u)*26) 0 calc(var(--k-ruler-u)*10);border-image:url(img/k-ruler-rod.webp) 0 80 0 32 fill / 0 calc(var(--k-ruler-u)*26) 0 calc(var(--k-ruler-u)*10) stretch;transition:bottom .6s cubic-bezier(.6,0,.3,1),opacity .2s .5s}
+.k-ruler-cover>span{transition:opacity .15s}
+.k-open .k-ruler-cover::before{clip-path:inset(0 0 100% 0)}
+.k-open .k-ruler-cover::after{bottom:calc(100% - var(--k-ruler-u)*16);opacity:0}
+.k-open .k-ruler-cover>span{opacity:0}
+
+/* ---------- 白木の札（k-kifuda）2026-10-21 みんなのピンチ脱出の道具で追加 ----------
+   文字は HTML（墨・太字）。札は横に伸び縮みする。.k-kifuda-himo を足すと上に朱の紐の輪が付く（紐の高さ --k-himo の半分だけ札の上にはみ出す＝上の余白をあける）。
+   大きさは --k-fuda-u（1単位・既定1px。ふちの太さが変わる）と --k-himo（紐の高さ・既定30px）。
+   <div class="k-kifuda k-kifuda-himo">鏡もち</div> */
+.k-kifuda{--k-fuda-u:1px;--k-himo:30px;position:relative;display:grid;place-items:center;box-sizing:border-box;min-height:72px;padding:2px 6px 6px;border-style:solid;border-width:calc(var(--k-fuda-u)*8) calc(var(--k-fuda-u)*14) calc(var(--k-fuda-u)*14);border-image:url(img/k-kifuda.webp) 40 70 70 fill / calc(var(--k-fuda-u)*8) calc(var(--k-fuda-u)*14) calc(var(--k-fuda-u)*14) stretch;color:var(--k-sumi);font-family:var(--k-bold);font-weight:400;line-height:1.25;text-align:center;font-feature-settings:"palt" 1}
+.k-kifuda-himo::before{content:"";position:absolute;left:50%;top:calc(var(--k-fuda-u)*-8 - var(--k-himo)*.504);height:var(--k-himo);aspect-ratio:71/135;transform:translateX(-50%);background:url(img/k-kifuda-himo.webp) center top/100% 100% no-repeat;pointer-events:none}
+.k-kifuda.k-kifuda-q{filter:saturate(.4);color:var(--k-text-2)}   /* まだ伏せている札 */
+
+@media (prefers-reduced-motion:reduce){
+  .k-ruler-zone,.k-ruler-mark,.k-ruler-cover::before,.k-ruler-cover::after,.k-ruler-cover>span{transition:none!important}
+}
