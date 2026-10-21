@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /view/
+Disallow: /a/
+Sitemap: https://monosashi.kkpwebninja.com/sitemap.xml

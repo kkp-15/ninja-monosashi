@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>みんなのものさし 答えの画面</title>
+<meta name="description" content="配信の「みんなのものさし」で、リスナーが答えを見る画面です。配信に出ている合言葉を入れてください。">
+<meta name="robots" content="noindex,follow">
+<meta name="theme-color" content="#ff8a3d">
+<link rel="canonical" href="https://monosashi.kkpwebninja.com/a/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<!-- 運営者の確認用（?kkptest=1 でこの端末だけ GA4 を送らない） -->
+<script>
+(function(){
+  var t = false;
+  try {
+    if (/[?&]kkptest=1\b/.test(location.search)) localStorage.setItem('kkp-test','1');
+    if (/[?&]kkptest=0\b/.test(location.search)) localStorage.removeItem('kkp-test');
+    t = localStorage.getItem('kkp-test') === '1';
+  } catch(e){}
+  window.__kkpTest = t;
+  if (t) window['ga-disable-G-2LM85GJN0L'] = true;
+})();
+</script>
+<!-- Google Analytics（開いた回数だけ。合言葉や答えは送らない）。この画面には広告を出さない -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2LM85GJN0L');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<script src="/js/odai.js"></script>
+<script src="/js/code.js"></script>
+<style>
+body{margin:0}
+.an{max-width:480px;margin:0 auto;padding:16px 16px 40px}
+.an-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px;padding:0 0 10px;border-bottom:2px solid var(--k-sumi)}
+.an-top b{font-size:16px;font-weight:800}
+.an-top span{font-size:14px;color:var(--k-text-2)}
+.an h1{font-size:22px;line-height:1.4;margin:16px 0 12px}
+.an form{display:flex;gap:8px;margin-top:8px}
+.an input{flex:1;min-width:0;height:56px;padding:0 12px;border:3px solid var(--k-sumi);border-radius:var(--k-r);background:#fff;font:inherit;font-size:26px;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.an input:focus{outline:4px double var(--k-shu);outline-offset:2px}
+.an form .k-btn-sm{min-height:56px;font-size:17px;padding:0 20px}
+.an .err{color:var(--k-shu);font-weight:700;font-size:15px;min-height:24px;margin:8px 0 0}
+.an .note{font-size:14px;color:var(--k-text-2);margin:8px 0 0}
+.ends{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;margin:8px 0}
+.ends span{font-size:20px;font-weight:800;line-height:1.3;max-width:48%}
+.ends .r{text-align:right}
+.bar{position:relative;height:72px;border:2.5px solid var(--k-sumi);border-radius:12px;background:linear-gradient(90deg,#f6efe4,#ffe0c2);overflow:hidden}
+.bar i{position:absolute;top:0;bottom:0;transform:translateX(-50%);font-style:normal;font-weight:800;font-size:15px}
+.bar .z2{background:#ffd2a8}.bar .z3{background:#ff9f5c}.bar .z4{background:#a9430b;color:#fff}
+.bar i span{position:absolute;top:6px;transform:translateX(-50%)}
+.bar .z4 span{left:50%}.bar .z3 span{left:14.7%}.bar .z2 span{left:10.3%}
+.bar .tk{position:absolute;top:0;bottom:0;width:2px;background:rgba(31,26,23,.3)}
+.scale{display:flex;justify-content:space-between;font-size:14px;color:var(--k-text-2);margin-top:4px}
+.bignum{text-align:center;font-size:72px;font-weight:800;color:#a9430b;line-height:1.1;margin:16px 0 4px;font-variant-numeric:tabular-nums}
+.bignum small{display:block;font-size:16px;color:var(--k-text-2);font-weight:700}
+.warn{border-top:1px solid var(--k-line-soft);padding-top:12px;margin-top:16px;font-size:16px;font-weight:700}
+.warn b{color:var(--k-shu)}
+.again{display:inline-block;margin-top:16px;font-size:15px;color:var(--k-sumi);font-weight:700}
+</style>
+</head>
+<body class="k-page">
+<main class="an" id="an">
+  <div class="an-top"><b>みんなのものさし</b><span>答えの画面</span></div>
+  <div id="box"></div>
+</main>
+<!-- WEBNINJA_UNIFIED_FOOTER -->
+<footer style="text-align:center;padding:2rem 1rem 2.5rem;font-size:.875rem;color:#5f6b7a;line-height:2;border-top:1px solid #f0e6d2;margin-top:2.5rem;background:#fffcf7;">
+  <div style="font-weight:800;color:#6e5530;font-size:.875rem;margin-bottom:0.4rem;">web忍者の砦</div>
+  <div>
+    <a href="https://kkpwebninja.com/" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">本丸トップ</a>·
+    <a href="https://privacypolicy.kkpwebninja.com/" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">プライバシーポリシー</a>·
+    <a href="https://kkpwebninja.com/otoiawase" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">お問い合わせ</a>·
+    <a href="https://x.com/kkp_webninja" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">@kkp_webninja</a>
+  </div>
+  <div style="margin-top:0.5rem;color:#7a6440;">© 2025-2026 web忍者の砦</div>
+</footer>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var T = window.MO_TOPICS, C = window.MO_CODE;
+  function track(n, p) { try { if (!window.__kkpTest && window.gtag) gtag('event', n, p || {}); } catch (e) {} }
+  function form(msg) {
+    $('box').innerHTML = '<h1>配信に出ている合言葉（6けた）を入れてね</h1>'
+      + '<form id="f"><input id="pin" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="go" maxlength="9" placeholder="例 K7P 3QX" aria-label="合言葉6けた"><button class="k-btn k-btn-sm" type="submit">見る</button></form>'
+      + '<p class="err" id="err" role="status">' + (msg || '') + '</p>'
+      + '<p class="note">英字と数字です。小文字・空白があっても大丈夫。</p>';
+    var inp = $('pin'); inp.focus();
+    $('f').addEventListener('submit', function (e) {
+      e.preventDefault();
+      var r = C.decode(inp.value, T.length);
+      if (!r) { $('err').textContent = '合言葉がちがいます。配信の画面を見てね。'; inp.select(); return; }
+      history.replaceState(null, '', '#' + C.norm(inp.value));
+      show(r); track('mono_answer', { from: 'pass' });
+    });
+  }
+  function show(a) {
+    var L = T[a.ti][0], R = T[a.ti][1], t = a.t;
+    var z = function (c, w, n) { return '<i class="' + c + '" style="left:' + t + '%;width:' + w + '%"><span>' + n + '</span></i>'; };
+    $('box').innerHTML = '<h1>' + esc(L) + ' 〜 ' + esc(R) + '</h1>'
+      + '<div class="ends"><span>' + esc(L) + '</span><span class="r">' + esc(R) + '</span></div>'
+      + '<div class="bar">' + z('z2', 29, 2) + z('z3', 17, 3) + z('z4', 7, 4) + '<span class="tk" style="left:25%"></span><span class="tk" style="left:50%"></span><span class="tk" style="left:75%"></span></div>'
+      + '<div class="scale"><span>0</span><span>50</span><span>100</span></div>'
+      + '<div class="bignum">' + t + '<small>正解の位置（0〜100）</small></div>'
+      + '<p class="warn"><b>数字を書いたら反則。</b>数字を使わずに、コメントでヒントを出してね。</p>'
+      + '<a class="again" href="#" id="again">別の合言葉を入れる</a>';
+    $('again').addEventListener('click', function (e) { e.preventDefault(); history.replaceState(null, '', location.pathname); form(); });
+  }
+  function route() {
+    var h = decodeURIComponent(location.hash.slice(1));
+    if (!h) { form(); return; }
+    var r = C.decode(h, T.length);
+    if (r) { show(r); track('mono_answer', { from: 'qr' }); } else form('この合言葉は使えません。配信の画面の合言葉を入れてね。');
+  }
+  window.addEventListener('hashchange', route);
+  route();
+})();
+</script>
+</body>
+</html>

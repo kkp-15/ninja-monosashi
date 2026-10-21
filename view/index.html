@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>みんなのものさし 表示ページ（OBS用）</title>
+<meta name="robots" content="noindex,follow">
+<link rel="canonical" href="https://monosashi.kkpwebninja.com/">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@500;700;800&display=swap" rel="stylesheet">
+<script src="/js/qr.js"></script>
+<style>
+/* OBS のウィンドウキャプチャで取り込む表示ページ。操作画面（同じブラウザ）から BroadcastChannel で受け取って描くだけ。
+   16:9 の画面をウィンドウいっぱいに置く。字はすべて画面の幅の 2.2% 以上（1920幅で42px＝1/3に縮めても14px相当） */
+:root{
+  --screen:#fff7ea; --ink:#1f1a17; --ink2:#4a3f37; --line:#ead9bf; --sumi:#1f1a17; --on-sumi:#fffdf8;
+  --or:#ff8a3d; --or-d:#a9430b; --shu:#c93b23; --bar1:#f6efe4; --bar2:#ffe0c2; --z2:#ffd2a8; --z3:#ff9f5c; --z4:#a9430b;
+}
+[hidden]{display:none!important}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--screen)}
+body{color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",sans-serif;font-weight:500;line-height:1.3}
+.screen{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,177.78vh);aspect-ratio:16/9;container-type:inline-size;background:var(--screen);overflow:hidden}
+.scr-top{position:absolute;left:0;right:0;top:0;height:7cqw;display:flex;align-items:center;gap:2cqw;padding:0 2.4cqw;font-size:2.4cqw;border-bottom:.25cqw solid var(--line)}
+.scr-name{font-weight:800;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.tag{flex:none;background:var(--or-d);color:#fff;padding:.35cqw 1.4cqw;border-radius:.6cqw;font-weight:800}
+.tag.off{background:#ebe3d6;color:var(--ink)}
+.scr-score{flex:none;margin-left:auto;font-weight:800;white-space:nowrap}
+.scr-body{position:absolute;left:0;right:0;top:7cqw;bottom:0;padding:1.6cqw 3cqw}
+.screen.withqr .scr-body{right:23cqw;padding-right:1.6cqw}
+.ms-hint{display:flex;align-items:baseline;gap:2cqw;justify-content:center;height:8cqw}
+.ms-hint .k{flex:none;font-size:2.6cqw;color:var(--ink2);font-weight:700}
+.ms-hint b{font-size:5.2cqw;font-weight:800;line-height:1.2;max-width:62cqw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ms-hint b.rule{font-size:3.4cqw;color:var(--shu)}
+.ms-guessrow{position:relative;height:5.4cqw}
+.ms-glabel{position:absolute;bottom:.4cqw;transform:translateX(-50%);background:var(--sumi);color:var(--on-sumi);font-size:2.8cqw;font-weight:800;padding:.3cqw 1.4cqw;border-radius:.6cqw;white-space:nowrap;transition:left .35s}
+.ms-bar{position:relative;height:9cqw;border-radius:1.2cqw;background:linear-gradient(90deg,var(--bar1),var(--bar2));border:.3cqw solid var(--ink);overflow:hidden}
+.ms-tick{position:absolute;top:0;bottom:0;width:.2cqw;background:rgba(31,26,23,.3)}
+.ms-zone{position:absolute;top:0;bottom:0;transform:translateX(-50%) scaleX(0);transform-origin:center;font-weight:800;font-size:2.6cqw;color:var(--ink);transition:transform .45s cubic-bezier(.2,1.2,.4,1)}
+.ms-zone.z2{background:var(--z2)}.ms-zone.z3{background:var(--z3)}.ms-zone.z4{background:var(--z4);color:#fff}
+.ms-zone span{position:absolute;top:.6cqw;transform:translateX(-50%)}
+.ms-zone.z4 span{left:50%}.ms-zone.z3 span{left:14.7%}.ms-zone.z2 span{left:10.3%}
+.revealed .ms-zone{transform:translateX(-50%) scaleX(1)}
+.revealed .ms-zone.z3{transition-delay:.12s}.revealed .ms-zone.z4{transition-delay:.24s}
+.ms-cover{position:absolute;inset:0;background:var(--sumi);color:var(--on-sumi);display:grid;place-items:center;font-size:2.8cqw;font-weight:700;transition:transform .55s cubic-bezier(.6,0,.3,1);z-index:2}
+.revealed .ms-cover{transform:translateY(-105%)}
+.ms-needle{position:absolute;top:-.3cqw;bottom:-.3cqw;width:.7cqw;background:var(--sumi);transform:translateX(-50%);z-index:3;transition:left .35s;box-shadow:0 0 0 .25cqw var(--screen)}
+.ms-ends{display:flex;justify-content:space-between;align-items:baseline;gap:2cqw;margin-top:1cqw}
+.ms-ends span{font-size:4cqw;font-weight:800;max-width:38cqw;line-height:1.2}
+.ms-ends .mid{flex:none;font-size:2.4cqw;color:var(--ink2);font-weight:700}
+.ms-ends .r{text-align:right}
+.withqr .ms-ends span{font-size:3.4cqw;max-width:30cqw}
+.ms-res{text-align:center;font-size:3.6cqw;font-weight:800;margin-top:1.4cqw;min-height:4.6cqw}
+.ms-res .pt{color:var(--or-d);font-size:4.4cqw}
+.ms-ranges{display:flex;justify-content:center;flex-wrap:wrap;gap:.4cqw 2cqw;font-size:2.6cqw;font-weight:800;margin-top:.6cqw}
+.ms-ranges span{white-space:nowrap}
+.ms-ranges .r4{color:var(--or-d)}
+.ms-call{text-align:center;font-size:2.4cqw;font-weight:700;color:var(--ink2);margin-top:.4cqw}
+.ms-near{text-align:center;font-size:3cqw;font-weight:800;min-height:3.6cqw;margin-top:.4cqw}
+.ms-start{position:absolute;inset:7cqw 0 0;display:grid;place-content:center;text-align:center;gap:1.6cqw;background:var(--screen);z-index:6}
+.ms-start h2{margin:0;font-size:7cqw;font-weight:800;line-height:1.2}
+.ms-start p{margin:0 auto;max-width:84cqw;font-size:3cqw;font-weight:700;color:var(--ink2)}
+.ms-start .big{font-size:9cqw;color:var(--or-d);font-weight:800;line-height:1.1}
+.ms-start .big small{font-size:3cqw;color:var(--ink2)}
+.ms-start.fin{place-content:center start;padding-left:8cqw;text-align:left}
+.ms-start.fin p{margin:0;max-width:56cqw}
+.stamp{position:absolute;top:13cqw;right:6cqw;display:grid;place-items:center;text-align:center;width:26cqw;height:26cqw;border-radius:50%;border:.9cqw solid currentColor;color:var(--shu);font-weight:800;font-size:5.2cqw;line-height:1.1;background:rgba(255,247,234,.82);transform:rotate(-10deg);animation:stampIn .38s cubic-bezier(.2,1.5,.4,1) both}
+.stamp small{display:block;font-size:2.6cqw;font-weight:700;margin-top:.6cqw}
+@keyframes stampIn{0%{transform:rotate(-10deg) scale(2.2);opacity:0}100%{transform:rotate(-10deg) scale(1);opacity:1}}
+@keyframes fadeUp{0%{opacity:0;transform:translateY(8px)}100%{opacity:1;transform:none}}
+.fadeup{display:inline-block;animation:fadeUp .4s ease both}
+/* 答えのQR（配信者が当てる） */
+.qrbox{background:#fff;padding:.6cqw;border-radius:.8cqw;line-height:0}
+.qrbox svg{display:block;width:100%;height:auto}
+.qr-big{position:absolute;inset:7cqw 0 0;z-index:7;background:var(--screen);display:flex;align-items:center;gap:4cqw;padding:0 6cqw;animation:fadeUp .3s ease both}
+.qr-big .qrbox{flex:none;width:33cqw;padding:1cqw}
+.qr-big .qtx{min-width:0}
+.qr-big p{margin:0}
+.qr-big .q1{font-size:4cqw;font-weight:800}
+.qr-big .q2{font-size:2.6cqw;color:var(--ink2);font-weight:700;margin-top:1.4cqw}
+.qr-big .addr{font-size:3.2cqw;font-weight:800;margin-top:.2cqw;word-break:break-all}
+.qr-big .pass{font-size:2.6cqw;color:var(--ink2);font-weight:700;margin-top:1.4cqw}
+.qr-big .pass b{display:block;font-size:8cqw;color:var(--ink);letter-spacing:.08em;line-height:1.1;font-variant-numeric:tabular-nums}
+.qr-big .rule{font-size:3cqw;font-weight:800;color:var(--shu);margin-top:1.6cqw}
+.qr-big .left{font-size:2.4cqw;color:var(--ink2);font-weight:700;margin-top:.8cqw}
+.qr-small{position:absolute;right:1.6cqw;top:8.4cqw;width:20cqw;z-index:4;text-align:center;animation:fadeUp .3s ease both}
+.qr-small .k{font-size:2.2cqw;color:var(--ink2);font-weight:700;margin-top:.6cqw;line-height:1.2}
+.qr-small b{display:block;font-size:4cqw;font-weight:800;letter-spacing:.06em;line-height:1.15}
+.qr-small .rule{font-size:2.2cqw;font-weight:800;color:var(--shu);margin-top:.6cqw;line-height:1.3}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="screen" id="screen">
+  <div class="scr-top"><span class="scr-name" id="sName">みんなのものさし</span><span class="tag off" id="sTag">はじまるよ</span><span class="scr-score" id="sScore"></span></div>
+  <div class="scr-body">
+    <div class="ms-hint"><span class="k" id="sHintK">ヒント</span><b id="sHint"></b></div>
+    <div class="ms-guessrow"><span class="ms-glabel" id="sGlabel" hidden></span></div>
+    <div id="sBarWrap">
+      <div class="ms-bar">
+        <div class="ms-zone z2" id="z2"><span>2</span></div>
+        <div class="ms-zone z3" id="z3"><span>3</span></div>
+        <div class="ms-zone z4" id="z4"><span>4</span></div>
+        <div class="ms-tick" style="left:25%"></div><div class="ms-tick" style="left:50%"></div><div class="ms-tick" style="left:75%"></div>
+        <div class="ms-needle" id="sNeedle" hidden></div>
+        <div class="ms-cover">正解はかくれています</div>
+      </div>
+    </div>
+    <div class="ms-ends"><span id="sL">0</span><span class="mid">50</span><span class="r" id="sR">100</span></div>
+    <div class="ms-res" id="sRes"></div>
+    <div class="ms-ranges" id="sRanges"></div>
+    <div class="ms-call" id="sCall"></div>
+    <div class="ms-near" id="sNear"></div>
+  </div>
+  <div class="qr-small" id="sQrSmall" hidden></div>
+  <div class="qr-big" id="sQrBig" hidden></div>
+  <div class="ms-start" id="sStart"><h2>みんなのものさし</h2><p>操作画面で「お題を出す」を押すと始まります</p></div>
+</div>
+<script>
+(function () {
+  'use strict';
+  var $ = function (id) { return document.getElementById(id); };
+  var esc = function (s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var clamp = function (x, a, b) { return Math.max(a, Math.min(b, x)); };
+  var RANGE = { 4: 3, 3: 8, 2: 14 };
+  var span = function (t, d) { return clamp(t - d, 0, 100) + '〜' + clamp(t + d, 0, 100); };
+  var score = function (d) { return d <= 3 ? 4 : d <= 8 ? 3 : d <= 14 ? 2 : 0; };
+  var ADDR = 'monosashi.kkpwebninja.com/a', QR_BASE = 'https://monosashi.kkpwebninja.com/a/#';
+  var S = null, last = {}, qrFor = '', qrSvg = '';
+  function set(id, key, html) { if (last[id] === key) return; last[id] = key; $(id).innerHTML = html; }
+
+  function render() {
+    var s = S; if (!s) return;
+    var self = s.mode === 'self', ph = s.phase, inRound = ph !== 'idle' && ph !== 'end';
+    $('sName').textContent = s.title || 'みんなのものさし';
+    $('sScore').textContent = '第' + Math.max(1, s.round) + '問 / ' + s.rounds + ' ・ ' + s.total + '点';
+    var tag = $('sTag');
+    tag.className = 'tag' + (ph === 'idle' ? ' off' : '');
+    tag.textContent = self ? ({ idle: 'はじまるよ', set: 'ヒントをコメントで', reveal: '正解', end: '結果' }[ph] || '')
+      : ({ idle: 'はじまるよ', guess: 'コメントで数字を予想', set: 'まもなく正解', reveal: '正解', end: '結果' }[ph] || '');
+    $('screen').classList.toggle('withqr', self && inRound);
+    var st = $('sStart');
+    st.classList.toggle('fin', ph === 'end');
+    if (ph === 'idle') {
+      st.hidden = false;
+      set('sStart', 'idle' + s.mode + s.title, '<h2>' + esc(s.title) + '</h2><p>' + (self ? 'みんなは答えを見て、数字を使わないヒントをコメント。配信者が当てるよ' : '配信者のヒントを聞いて、0〜100 の数字をコメントしてね') + '</p>');
+    } else if (ph === 'end') {
+      st.hidden = false;
+      var max = s.rounds * 4, g = s.total >= max * .75 ? ['以心伝心', '心が読めてる'] : s.total >= max * .5 ? ['いい感じ', '息が合ってきた'] : ['また挑戦', '次はもっと近く'];
+      set('sStart', 'end' + s.total + s.round + (s.best ? s.best.d : ''), '<p>' + s.rounds + '問の合計' + (self ? '（配信者）' : '') + '</p><div class="big">' + s.total + '点 <small>/ ' + max + '点</small></div><div class="stamp">' + g[0] + '<small>' + g[1] + '</small></div>' + (s.best ? '<p>いちばん近かった: ' + esc(s.best.L) + '〜' + esc(s.best.R) + '（差 ' + s.best.d + '）</p>' : ''));
+    } else st.hidden = true;
+
+    var wrap = $('sBarWrap');
+    if (inRound) {
+      $('sL').textContent = s.L; $('sR').textContent = s.R;
+      var hk = $('sHintK'), hb = $('sHint');
+      if (self) { hk.textContent = 'ヒントはコメントで'; hb.textContent = '数字を書いたら反則'; hb.className = 'rule'; }
+      else { hk.textContent = 'ヒント'; hb.textContent = s.hint ? '「' + s.hint + '」' : '配信者のヒントを聞いてね'; hb.className = ''; }
+      var gl = $('sGlabel'), nd = $('sNeedle');
+      if (s.guess != null) {
+        gl.hidden = false; nd.hidden = false;
+        gl.style.left = clamp(s.guess, 8, 92) + '%'; nd.style.left = s.guess + '%';
+        gl.textContent = (self ? '配信者' : 'みんな') + 'の予想 ' + s.guess;
+      } else { gl.hidden = true; nd.hidden = true; }
+      if (ph === 'reveal' && s.target != null) {
+        ['z2', 'z3', 'z4'].forEach(function (id, i) { var e = $(id); e.style.left = s.target + '%'; e.style.width = [29, 17, 7][i] + '%'; });
+        if (!wrap.classList.contains('revealed')) { void wrap.offsetWidth; setTimeout(function () { wrap.classList.add('revealed'); }, 30); }
+        var d = Math.abs(s.guess - s.target), p = score(d), k = s.round + ':' + s.target + ':' + s.guess;
+        set('sRes', k, '<span class="fadeup" style="animation-delay:.5s">正解 ' + s.target + ' ・ 差 ' + d + ' → <span class="pt">' + (p ? p + '点' : '0点 おしい') + '</span></span>');
+        if (!self) {
+          set('sRanges', k, '<span class="fadeup" style="animation-delay:.7s">ぴったり ' + s.target + '</span><span class="fadeup r4" style="animation-delay:.75s">4点 ' + span(s.target, RANGE[4]) + '</span><span class="fadeup" style="animation-delay:.8s">3点 ' + span(s.target, RANGE[3]) + '</span><span class="fadeup" style="animation-delay:.85s">2点 ' + span(s.target, RANGE[2]) + '</span>');
+          set('sCall', k, '<span class="fadeup" style="animation-delay:.9s">範囲に入った人は「当たった」とコメントしてね</span>');
+          set('sNear', k + ':' + s.near, s.near != null ? '<span class="fadeup">いちばん近い予想 ' + s.near + '！</span>' : '');
+        } else { set('sRanges', '', ''); set('sCall', '', ''); set('sNear', '', ''); }
+      } else {
+        wrap.classList.remove('revealed');
+        ['z2', 'z3', 'z4'].forEach(function (id) { $(id).style.left = '50%'; });
+        set('sRes', '', ''); set('sRanges', '', ''); set('sCall', '', ''); set('sNear', '', '');
+      }
+    } else {
+      wrap.classList.remove('revealed');
+      $('sGlabel').hidden = true; $('sNeedle').hidden = true;
+    }
+    renderQr();
+  }
+
+  function renderQr() {
+    var s = S, on = !!(s && s.mode === 'self' && s.phase === 'set' && s.code);
+    var big = on && s.qrBig && Date.now() < s.qrUntil;
+    $('sQrBig').hidden = !big; $('sQrSmall').hidden = !on || big;
+    if (!on) return;
+    if (qrFor !== s.code) { qrFor = s.code; qrSvg = window.MO_QR(QR_BASE + s.code); last.sQrBig = last.sQrSmall = null; }
+    var pass = s.code.slice(0, 3) + ' ' + s.code.slice(3);
+    set('sQrBig', 'b' + s.code, '<div class="qrbox">' + qrSvg + '</div><div class="qtx"><p class="q1">答えはスマホで見てね</p><p class="q2">QRを読むか、このアドレスへ</p><p class="addr">' + ADDR + '</p><p class="pass">合言葉<b>' + pass + '</b></p><p class="rule">数字を書いたら反則。数字を使わずにヒントをコメント</p><p class="left" id="sQrLeft"></p></div>');
+    set('sQrSmall', 's' + s.code, '<div class="qrbox">' + qrSvg + '</div><div class="k">合言葉</div><b>' + pass + '</b><div class="rule">数字を書いたら反則</div>');
+    if (big) { var l = $('sQrLeft'); if (l) l.textContent = 'あと' + Math.max(0, Math.ceil((s.qrUntil - Date.now()) / 1000)) + '秒で小さくなります'; }
+  }
+  setInterval(renderQr, 250);
+
+  // ---- 操作画面から受け取る（同じブラウザの中だけ） ----
+  function take(d) { if (!d || !d.state) return; S = d.state; render(); }
+  var CH = null; try { CH = new BroadcastChannel('kkp-monosashi'); CH.onmessage = function (e) { take(e.data); }; } catch (e) {}
+  window.addEventListener('storage', function (e) { if (e.key === 'mo-view') { try { take(JSON.parse(e.newValue)); } catch (_) {} } });
+  try { var d = JSON.parse(localStorage.getItem('mo-view') || 'null'); if (d && d.t && Date.now() - d.t < 12 * 3600 * 1000) take(d); } catch (e) {}
+  function hello() { try { if (CH) CH.postMessage({ hello: 1 }); } catch (e) {} try { localStorage.setItem('mo-view-hello', String(Date.now())); } catch (e) {} }
+  hello(); setInterval(hello, 3000);
+})();
+</script>
+</body>
+</html>

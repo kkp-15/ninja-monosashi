@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>配信・実況でみんなのものさしを遊ぶ方法｜リスナーと目盛りの位置当て</title>
+<meta name="description" content="配信・実況で、みんなのものさしをする方法。リスナーが数字をコメントして当てる遊び方と、リスナーがQRか合言葉で答えを見てヒントを出し配信者が当てる遊び方。OBSに取り込む表示ページつき。ブラウザだけで、登録不要。">
+<link rel="canonical" href="https://monosashi.kkpwebninja.com/haishin/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta property="og:title" content="配信・実況でみんなのものさしを遊ぶ方法">
+<meta property="og:description" content="リスナーが数字で当てる／リスナーがヒントを出して配信者が当てる。OBSの表示ページつき。登録不要。">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://monosashi.kkpwebninja.com/haishin/">
+<meta property="og:site_name" content="みんなのものさし">
+<meta property="og:image" content="https://monosashi.kkpwebninja.com/ogp.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "Article", "headline": "配信・実況でみんなのものさしを遊ぶ方法", "datePublished": "2026-10-21", "dateModified": "2026-10-21", "author": {"@type": "Organization", "name": "web忍者の砦"}, "publisher": {"@type": "Organization", "name": "web忍者の砦"}, "mainEntityOfPage": "https://monosashi.kkpwebninja.com/haishin/"}</script>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-2LM85GJN0L"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-2LM85GJN0L');
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/kit/kit.css">
+<style>
+/* 読み物ページ：地は白、本文16px・行間1.7（はぁ・共通点探しの /haishin/ と同じ形） */
+:root{--orange:#ff8a3d;--ink:#333;--muted:#5c4d3d}
+*{box-sizing:border-box}
+body{margin:0;background:#fff;color:var(--ink);font-family:"M PLUS Rounded 1c","Hiragino Maru Gothic ProN",system-ui,sans-serif;font-size:16px;line-height:1.7;-webkit-text-size-adjust:100%}
+.wrap{max-width:760px;margin:0 auto;padding:18px 16px 60px}
+h1{font-size:1.4rem;line-height:1.5;margin:.2rem 0 .4rem}
+h1 .c{display:block;font-size:1rem;color:var(--muted);font-weight:700}
+.upd{font-size:.875rem;color:var(--muted);margin:0 0 .8rem}
+.lead{margin:0 0 1rem}
+.cta{display:block;min-height:48px;text-align:center;background:var(--orange);color:#1f1a17;font-weight:800;font-size:.95rem;padding:.75rem .5rem;border-radius:8px;text-decoration:none;margin:0 0 1.6rem}
+h2{font-size:20px;line-height:1.5;margin:1.6rem 0 .5rem;padding-left:.6rem;border-left:4px solid var(--orange)}
+.steps{margin:0 0 1rem;padding-left:1.6rem}.steps li{margin:0 0 .6rem}
+code{background:#f6efe4;padding:.05rem .35rem;border-radius:4px;font-size:.92em}
+a{color:#1565c0}
+.mode-cmp{width:100%;border-collapse:collapse;margin:1rem 0 .4rem;font-size:15px;line-height:1.5}
+.mode-cmp th,.mode-cmp td{border:1px solid #d9cbb6;padding:8px 10px;text-align:left;vertical-align:top;color:#1f1a17}
+.mode-cmp thead th{background:#f6efe3;font-weight:800}
+.mode-cmp tbody th{white-space:nowrap;font-weight:800}
+.mode-cmp-note{margin:0 0 1rem;font-size:14px;color:var(--muted)}
+@media(max-width:480px){.mode-cmp{font-size:14px}.mode-cmp th,.mode-cmp td{padding:6px 7px}}
+@media(min-width:760px){h2{font-size:22px}}
+</style>
+</head>
+<body class="k-page">
+<div class="wrap">
+
+<h1>配信・実況で使う方へ<span class="c">みんなのものさし</span></h1>
+<p class="upd">更新日 <time datetime="2026-10-21">2026-10-21</time></p>
+<p class="lead">両はしの言葉のあいだにかくれた正解を、ヒント1つで当てる遊びを、リスナーと配信できます。インストールも登録もいりません。</p>
+
+<table class="mode-cmp"><thead><tr><th scope="col">遊び方</th><th scope="col">どう遊ぶ</th><th scope="col">広告</th></tr></thead><tbody>
+<tr><th scope="row">同じ部屋で</th><td>スマホ1台を回す</td><td>結果のあとだけ</td></tr>
+<tr><th scope="row">リスナーが当てる</th><td>配信者が正解を見てヒント。リスナーが数字をコメント</td><td>なし</td></tr>
+<tr><th scope="row">配信者が当てる</th><td>リスナーがQRか合言葉で答えを見て、数字なしのヒントをコメント</td><td>なし</td></tr>
+</tbody></table>
+<p class="mode-cmp-note">配信の2つは、パソコン（幅768px以上）で選べます。</p>
+
+<a class="cta" href="https://monosashi.kkpwebninja.com/?mode=stream">配信で開く（無料・登録不要）</a>
+
+<h2>配信の前に（1分）</h2>
+<ol class="steps">
+<li>パソコンで <a href="https://monosashi.kkpwebninja.com/?mode=stream">monosashi.kkpwebninja.com/?mode=stream</a> を開き、遊び方を選びます。広告は出ません。</li>
+<li>「表示ページを別ウィンドウで開く」を押し、OBSの<b>「ウィンドウキャプチャ」</b>でそのウィンドウを取り込みます。操作画面は映しません。</li>
+<li>タイトル（「〇〇のものさし」の〇〇）とお題の種類を決めて、「お題を出す」。</li>
+</ol>
+<p>表示ページは、操作画面と同じパソコン・同じブラウザで開いてください（OBSの「ブラウザソース」ではつながりません）。最小化すると止まります。</p>
+
+<h2>リスナーが当てる</h2>
+<ol class="steps">
+<li>操作画面にだけ正解が出ます。数字を言わずに、ヒントを1つ（入れると画面にも出ます）。</li>
+<li>リスナーが 0〜100 の数字をコメント。多い数字などを見て「みんなの予想」に入れます。</li>
+<li>「めくる」で正解と当たりの範囲（4点・3点・2点）が出ます。いちばん近い数字は、入れたときだけ出ます。</li>
+</ol>
+
+<h2>配信者が当てる</h2>
+<ol class="steps">
+<li>「お題を出す」で、表示ページに答えのQRと6けたの合言葉が大きく出ます（15秒で右上に小さくなります。「もう一度大きく」で戻せます）。</li>
+<li>リスナーはQRを読むか、<code>monosashi.kkpwebninja.com/a</code> で合言葉を入れて答えを見ます。数字を使わないヒントをコメントしてもらいます。</li>
+<li>配信者はヒントを読んで目盛りを動かし、「めくる」。答えは操作画面にも出ません。</li>
+</ol>
+
+<h2>配信で使うときの条件</h2>
+<p>許諾の申請はいりません。収益化もできます。概要欄にサイト名「web忍者の砦」とURL（https://monosashi.kkpwebninja.com/）を書いてください。使うときは<a href="https://kkpwebninja.com/otoiawase" target="_blank" rel="noopener">お問い合わせ</a>か X（<a href="https://x.com/kkp_webninja" target="_blank" rel="noopener">@kkp_webninja</a>）で一言いただけると助かります。ご要望があれば、優先してアップデートします。くわしくは<a href="https://kkpwebninja.com/guidelines">配信・紹介・掲載のガイドライン</a>へ。</p>
+
+<p style="margin-top:2rem"><a class="cta" href="https://monosashi.kkpwebninja.com/">みんなのものさしを開く</a></p>
+
+</div>
+<!-- WEBNINJA_UNIFIED_FOOTER -->
+<footer style="text-align:center;padding:2rem 1rem 2.5rem;font-size:.875rem;color:#5f6b7a;line-height:2;border-top:1px solid #f0e6d2;margin-top:2.5rem;background:#fffcf7;">
+  <div style="font-weight:800;color:#6e5530;font-size:.875rem;margin-bottom:0.4rem;">web忍者の砦</div>
+  <div>
+    <a href="https://kkpwebninja.com/" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">本丸トップ</a>·
+    <a href="https://privacypolicy.kkpwebninja.com/" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">プライバシーポリシー</a>·
+    <a href="https://kkpwebninja.com/otoiawase" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">お問い合わせ</a>·
+    <a href="https://x.com/kkp_webninja" target="_blank" rel="noopener" style="color:#6e5530;text-decoration:none;margin:0 0.5rem;">@kkp_webninja</a>
+  </div>
+  <div style="margin-top:0.5rem;color:#7a6440;">© 2025-2026 web忍者の砦</div>
+</footer>
+</body>
+</html>
