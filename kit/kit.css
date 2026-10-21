@@ -243,9 +243,10 @@ a.k-card:hover h3,a.k-card:focus-visible h3{text-decoration:underline;text-decor
 
 /* ---------- 通知（k-toast） ----------
    KKit.toast('コピーしました') で出す（2.2秒で消える）。HTML に置かなくてよい。
-   消えている間は visibility:hidden ＝画面の端に札が残らない。中が空なら出ない */
-.k-toast{position:fixed;left:50%;bottom:calc(var(--k-install-bottom,12px) + 12px + env(safe-area-inset-bottom));z-index:1100;box-sizing:border-box;max-width:calc(100vw - 32px);padding:10px 16px;border:var(--k-bw-s) solid var(--k-sumi);border-radius:var(--k-r);background:var(--k-sumi);color:#fff;font-family:var(--k-bold);font-size:15px;line-height:1.4;letter-spacing:.04em;text-align:left;pointer-events:none;opacity:0;visibility:hidden;transform:translate(-50%,6px);transition:opacity .18s,transform .18s,visibility 0s .18s}
-.k-toast.k-on{opacity:1;visibility:visible;transform:translate(-50%,0);transition:opacity .18s,transform .18s}
+   消えている間は visibility:hidden ＝画面の端に札が残らない。中が空なら出ない
+   2026-10-21: 左50%を基準にしていたため短い文でも画面の半分の幅で折り返していた→左右0＋margin auto＋max-content で真ん中に置く */
+.k-toast{position:fixed;left:0;right:0;margin:0 auto;width:max-content;bottom:calc(var(--k-install-bottom,12px) + 12px + env(safe-area-inset-bottom));z-index:1100;box-sizing:border-box;max-width:calc(100vw - 32px);padding:10px 16px;border:var(--k-bw-s) solid var(--k-sumi);border-radius:var(--k-r);background:var(--k-sumi);color:#fff;font-family:var(--k-bold);font-size:15px;line-height:1.4;letter-spacing:.04em;text-align:left;pointer-events:none;opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .18s,transform .18s,visibility 0s .18s}
+.k-toast.k-on{opacity:1;visibility:visible;transform:none;transition:opacity .18s,transform .18s}
 .k-toast:empty{display:none}
 
 /* ---------- 空のとき（k-empty） ----------
@@ -424,3 +425,114 @@ a.k-card:hover h3,a.k-card:focus-visible h3{text-decoration:underline;text-decor
 @media (prefers-reduced-motion:reduce){
   .k-ruler-zone,.k-ruler-mark,.k-ruler-cover::before,.k-ruler-cover::after,.k-ruler-cover>span{transition:none!important}
 }
+
+/* =====================================================================
+   2026-10-21 配信の土台と見た目の部品（第2波）
+   KKit.stream / KKit.openView(.k-view-open) / KKit.live(.k-live) / .k-view・.k-view-idle / KKit.resume(.k-resume)
+   KKit.twice / KKit.fitText / .k-stream-title / .k-dock / k-stamp-sm・lg / k-result の段 / .k-stage-empty / .k-pass
+   使い方は README の「配信の土台」。最初に使ったのは みんなのものさし・みんなのピンチ脱出
+   ===================================================================== */
+
+/* ---------- 判子の大きさ（表の中＝sm・3文字＝lg） ---------- */
+.k-stamp.k-stamp-sm{width:48px;height:48px;font-size:14px;line-height:1.05;letter-spacing:0}
+.k-stamp.k-stamp-lg{width:78px;height:78px;font-size:19px;line-height:1.05;letter-spacing:-.02em}
+
+/* ---------- 巻物の結果欄の段（小・大・長い文） ---------- */
+.k-result.k-result-sm{border-width:12px 32px;border-image-width:12px 32px;padding:2px 0}
+.k-result.k-result-sm b{font-size:24px}
+.k-result.k-result-lg{border-width:20px 52px;border-image-width:20px 52px;padding:6px 0}
+.k-result.k-result-lg b{font-size:48px;line-height:1.15}
+.k-result.k-result-long b{font-family:var(--k-head);font-weight:800;font-size:20px;line-height:1.45;letter-spacing:.02em;color:var(--k-sumi);text-shadow:none;text-wrap:balance;word-break:auto-phrase}
+.k-result .k-result-row{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap}
+
+/* ---------- 引く前・出す前の大きな舞台（k-stage-empty） ----------
+   巻物の地に、丸紋の透かしを1つ。中は題（.k-stage-empty-t）と1行（.k-stage-empty-d）。絵は img を1つだけ（k-pass など） */
+.k-stage-empty{position:relative;isolation:isolate;display:grid;place-content:center;justify-items:center;gap:6px;box-sizing:border-box;min-height:200px;border-style:solid;border-width:20px 52px;border-image:url(img/d3-scroll.webp) 56 84 fill / 20px 52px stretch;padding:8px 0;text-align:center;color:var(--k-text-2)}
+.k-stage-empty::before{content:"";position:absolute;inset:0;z-index:-1;background:url(img/d4-mon.webp) center/auto 86% no-repeat;opacity:.07;pointer-events:none}
+.k-stage-empty-t{margin:0;font-family:var(--k-head);font-weight:800;font-size:28px;line-height:1.3;letter-spacing:.04em;color:var(--k-sumi);word-break:auto-phrase}
+.k-stage-empty-d{margin:0;font-size:15px;font-weight:700;line-height:1.5}
+.k-stage-empty img{display:block;width:min(240px,70%);height:auto}
+
+/* ---------- スマホを渡す場面の挿し絵（k-pass） ----------
+   <img class="k-pass" src="kit/img/k-pass-phone.webp" alt="" width="320" height="198"> */
+.k-pass{display:block;width:min(260px,72%);height:auto;margin:0 auto}
+
+/* ---------- 主ボタンの固定帯（k-dock。PC でも使える k-fix） ----------
+   右に主ボタン1つ（場面が変わっても同じ場所）、左に戻るの小ボタン（.k-dock-l の中）
+   <div class="k-dock"><div class="k-dock-l"><button type="button">戻る</button></div><button class="k-btn k-btn-main">次へ</button></div> */
+.k-dock{position:sticky;bottom:0;z-index:30;display:flex;align-items:center;gap:12px;box-sizing:border-box;padding:10px 16px calc(10px + env(safe-area-inset-bottom));border-top:var(--k-bw) solid var(--k-sumi);background-color:var(--k-kinari);background-image:conic-gradient(rgba(31,26,23,.04) 25%,transparent 0 50%,rgba(31,26,23,.04) 0 75%,transparent 0);background-size:16px 16px}
+.k-dock>.k-btn-main{flex:1 1 auto;min-width:0;margin-left:auto}
+.k-dock-l{flex:none;display:flex;align-items:center;gap:8px}
+.k-dock-l>button,.k-dock-l>a{display:inline-flex;align-items:center;min-height:44px;padding:0 12px;border:var(--k-bw-s) solid var(--k-sumi);border-radius:var(--k-r);background:var(--k-surface);color:var(--k-sumi);font-family:var(--k-body);font-size:14px;font-weight:700;text-decoration:none;cursor:pointer}
+.k-dock-l>[hidden]{display:none}
+.k-dock.k-dock-static{position:relative}   /* 下に貼り付けず、その場に置く（1画面に収めた配信の操作画面など） */
+@media (min-width:768px){ .k-dock>.k-btn-main{flex:0 1 440px} }
+
+/* ---------- 表示ページを開く（k-view-open。中は kit.js が作る） ----------
+   <div class="k-view-open" data-k-view="/view/" data-k-ch="pinch-view"></div> */
+.k-view-open{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.k-view-open>.k-btn{min-height:44px;padding:0 14px;font-size:15px;box-shadow:var(--k-sh-s)}
+.k-view-open>.k-seg{flex:none}
+.k-view-open>.k-seg>button{min-height:44px;padding:4px 10px;font-size:14px}
+.k-view-open>p{flex:1 1 260px;margin:0;font-size:14px;line-height:1.5;color:var(--k-text-2)}
+.k-view-open>.k-vo-msg{flex-basis:100%;color:var(--k-shu);font-weight:700}
+
+/* ---------- 表示ページとのつながりの札（k-live） ---------- */
+.k-live{display:inline-flex;align-items:center;gap:6px;font-size:14px;font-weight:700;line-height:1.4;color:var(--k-text-2);white-space:nowrap}
+.k-live::before{content:"";flex:none;width:10px;height:10px;border-radius:50%;background:#a29a92;box-shadow:0 0 0 2px var(--k-surface)}
+.k-live.k-on{color:var(--k-sumi)}
+.k-live.k-on::before{background:#2f8a4a}
+
+/* ---------- 続きから（k-resume。KKit.resume が中を作る） ---------- */
+.k-resume{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:0 0 16px;padding:10px 0;border-top:2px solid var(--k-shu);border-bottom:1px solid var(--k-line-soft)}
+.k-resume>p{flex:1 1 220px;margin:0;font-size:15px;font-weight:700;line-height:1.5}
+.k-resume>.k-btn{min-height:44px;padding:0 16px;font-size:15px}
+
+/* ---------- 2回押しの1回目（KKit.twice） ---------- */
+.k-twice-on{outline:3px solid var(--k-shu)!important;outline-offset:2px}
+
+/* ---------- 「〇〇の」タイトル（k-stream-title） ----------
+   <label class="k-stream-title"><input type="text" maxlength="12" placeholder="みんな" aria-label="タイトルの名前の部分"><span>のピンチ脱出</span></label> */
+.k-stream-title{display:flex;align-items:center;gap:8px;flex-wrap:wrap;color:var(--k-sumi)}
+.k-stream-title>input{flex:0 1 220px;min-width:0;height:44px;box-sizing:border-box;padding:0 10px;border:var(--k-bw-s) solid var(--k-sumi);border-radius:var(--k-r);background:#fff;color:var(--k-sumi);font:inherit;font-size:16px;font-weight:700}
+.k-stream-title>input:focus{outline:4px double var(--k-shu);outline-offset:2px}
+.k-stream-title>span{font-size:17px;font-weight:800}
+
+/* ---------- /view/ の共通の枠（k-view） ----------
+   body に k-view、中に 16:9 の .k-view-stage。ウィンドウに合わせて縮む（スクロールなし）。
+   字は --k-v-* を使う: どれも max(42px, 画面の幅の◯%)＝どのウィンドウでも 1/3 に縮めて 14px 以上
+   背景は <html data-k-bg="cream|green|clear">（KKit.view が ?bg= と操作画面の選択から付ける。既定 cream）
+   <body class="k-view"><div class="k-view-stage">
+     <header class="k-view-top">…</header><main class="k-view-body">…</main>
+     <div class="k-view-idle" hidden>…</div>
+     <footer class="k-view-credit">みんなのピンチ脱出｜pinch.kkpwebninja.com</footer>
+   </div></body> */
+body.k-view{margin:0;height:100vh;overflow:hidden;background:var(--k-kinari) url(img/d4-washi.webp) 0 0/420px auto;color:var(--k-sumi);font-family:var(--k-body)}
+[data-k-bg="green"] body.k-view{background:#00b140}
+[data-k-bg="clear"] body.k-view{background:transparent}
+.k-view-stage{--k-v-min:max(42px,2.3cqw);--k-v-s:max(46px,2.8cqw);--k-v-m:max(54px,3.6cqw);--k-v-l:max(62px,4.6cqw);--k-v-xl:max(76px,6.4cqw);--k-v-credit:max(24px,1.8cqw);--k-v-pad:max(16px,2.4cqw);
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(100vw,177.78vh);height:min(56.25vw,100vh);container-type:size;overflow:hidden;display:flex;flex-direction:column;box-sizing:border-box}
+.k-view-top{flex:none;display:flex;align-items:center;gap:var(--k-v-pad);box-sizing:border-box;padding:calc(var(--k-v-pad)*.4) var(--k-v-pad);border-bottom:max(3px,.25cqw) solid var(--k-sumi);font-family:var(--k-head);font-weight:800;font-size:var(--k-v-min);line-height:1.2;min-width:0}
+.k-view-top>*{min-width:0}
+.k-view-body{position:relative;flex:1 1 auto;min-height:0;box-sizing:border-box;padding:calc(var(--k-v-pad)*.4) var(--k-v-pad);display:flex;flex-direction:column}
+.k-view-credit{flex:none;box-sizing:border-box;height:calc(var(--k-v-credit)*1.6);padding:0 var(--k-v-pad);display:flex;align-items:center;justify-content:flex-end;font-family:var(--k-body);font-size:var(--k-v-credit);font-weight:700;line-height:1;color:var(--k-text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 待ち画面: 題字・まもなく始まります・1行・薄い地（配信者向けの説明は出さない） */
+.k-view-idle{position:absolute;left:0;right:0;top:0;bottom:calc(var(--k-v-credit)*1.6);z-index:20;display:flex;flex-direction:column;justify-content:center;gap:calc(var(--k-v-pad)*.6);box-sizing:border-box;padding:0 calc(var(--k-v-pad)*2.4);background:var(--k-kinari) url(img/d4-washi.webp) 0 0/420px auto}
+.k-view-idle::before{content:"";position:absolute;right:-4cqw;top:50%;width:46cqh;height:46cqh;transform:translateY(-50%);background:url(img/d4-mon.webp) center/contain no-repeat;opacity:.06;pointer-events:none}
+.k-view-idle>b,.k-view-idle-t{display:block;font-family:var(--k-head);font-weight:800;font-size:var(--k-v-xl);line-height:1.2;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.k-view-idle>p{margin:0;font-family:var(--k-bold);font-size:var(--k-v-l);line-height:1.25;color:var(--k-shu)}
+.k-view-idle>small{display:block;font-size:var(--k-v-min);font-weight:700;line-height:1.35;color:var(--k-text-2)}
+.k-view-stage.k-idle .k-view-top{visibility:hidden}   /* 待ち画面では上の題名を出さない（題名は1回だけ） */
+/* 緑（クロマキー）と透過: 字の下だけ生成りの面を敷く（緑の上に字を直に置かない） */
+[data-k-bg="green"] .k-view-stage,[data-k-bg="clear"] .k-view-stage{padding:max(8px,1cqw);gap:max(6px,.8cqw)}
+[data-k-bg="green"] .k-view-top,[data-k-bg="clear"] .k-view-top,
+[data-k-bg="green"] .k-view-body,[data-k-bg="clear"] .k-view-body,
+[data-k-bg="green"] .k-view-credit,[data-k-bg="clear"] .k-view-credit{background:var(--k-kinari) url(img/d4-washi.webp) 0 0/420px auto;border:max(3px,.25cqw) solid var(--k-sumi);border-radius:max(6px,.6cqw)}
+[data-k-bg="green"] .k-view-credit,[data-k-bg="clear"] .k-view-credit{align-self:flex-end}
+[data-k-bg="green"] .k-view-idle,[data-k-bg="clear"] .k-view-idle{inset:max(8px,1cqw) max(8px,1cqw) calc(var(--k-v-credit)*1.6 + max(14px,1.8cqw));border:max(3px,.25cqw) solid var(--k-sumi);border-radius:max(6px,.6cqw)}
+@media (prefers-reduced-motion:reduce){ body.k-view *,body.k-view *::before,body.k-view *::after{animation:none!important;transition:none!important} }
+
+/* ---------- ものさし: 予想が正解の近く（差3以内）のとき（k-ruler-hit） ----------
+   .k-ruler に .k-ruler-hit を足すと、正解の印と「4」の数字を消して針だけを見せる（針が印と数字に重なって読めなくなるため。点は結果の判子で出す） */
+.k-ruler.k-ruler-hit .k-ruler-mark{opacity:0!important}
+.k-ruler.k-ruler-hit .k-ruler-z4>b{opacity:0}

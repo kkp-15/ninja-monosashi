@@ -57,13 +57,21 @@
   gtag('config', 'G-2LM85GJN0L');
 </script>
 
+<!-- 共通部品 D4（kkp-kit を kit/ にコピーしたもの。中は手で直さず kkp-kit 側で直して sync.sh）。
+     配信モードの判定（KKit.stream）を広告より先に使うので defer なしで読む -->
+<script src="/kit/kit.js"></script>
+<script>
+// 前の版は「配信の2つ」を mo-mode だけで覚えていた。その人は配信モードのまま始める
+try { if (localStorage.getItem('mo-stream') === null && /^(live|self)$/.test(localStorage.getItem('mo-mode') || '')) localStorage.setItem('mo-stream', '1'); } catch (e) {}
+KKit.stream.init({ key: 'mo-stream' });
+</script>
 <!-- AdSense
      ふだんは「同じ部屋で」の結果を出したときに初めて読む（広告は結果のあとだけ）。
-     配信の2つを選んでいる間は読まない（window.__moNoAds）。一度読んだあとに配信へ切り替えたら、読み直して消す。 -->
+     配信モード（配信の2つ）では読まない。切り替えるとページを読み直すので、読んだ広告は残らない。 -->
 <script>
 (function(){
   var state = 0, waits = [];
-  window.__moNoAds = !!window.__kkpTest;
+  window.__moNoAds = KKit.stream.noAds();
   window.__moAdsLoaded = function(){ return state > 0; };
   window.__moLoadAds = function(cb){
     if (window.__moNoAds) return;
@@ -82,11 +90,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=M+PLUS+Rounded+1c:wght@400;700;800&display=swap" rel="stylesheet">
 <!-- k-fonts:start -->
-<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=RocknRoll+One&display=swap&text=-%2F0123456789%3A%40ABCDEFGHJKMNOPQRSTWXY_abeijknpvw%C2%A9%C2%B1%C2%B7%E2%86%92%E2%88%92%E3%80%81%E3%80%82%E3%80%87%E3%80%8C%E3%80%8D%E3%80%9C%E3%81%82%E3%81%84%E3%81%86%E3%81%88%E3%81%8A%E3%81%8B%E3%81%8C%E3%81%8D%E3%81%8F%E3%81%90%E3%81%91%E3%81%93%E3%81%95%E3%81%97%E3%81%98%E3%81%99%E3%81%9A%E3%81%9B%E3%81%9D%E3%81%9F%E3%81%A0%E3%81%A1%E3%81%A3%E3%81%A4%E3%81%A6%E3%81%A7%E3%81%A8%E3%81%A9%E3%81%AA%E3%81%AB%E3%81%AD%E3%81%AE%E3%81%AF%E3%81%B0%E3%81%B2%E3%81%B3%E3%81%B4%E3%81%B5%E3%81%B6%E3%81%B8%E3%81%B9%E3%81%BB%E3%81%BE%E3%81%BF%E3%82%80%E3%82%81%E3%82%82%E3%82%84%E3%82%85%E3%82%88%E3%82%89%E3%82%8A%E3%82%8B%E3%82%8C%E3%82%8F%E3%82%92%E3%82%93%E3%82%A3%E3%82%A4%E3%82%A6%E3%82%AD%E3%82%AF%E3%82%B0%E3%82%B2%E3%82%B3%E3%82%B5%E3%82%B6%E3%82%B7%E3%82%B8%E3%82%B9%E3%82%BD%E3%82%BF%E3%83%83%E3%83%84%E3%83%86%E3%83%88%E3%83%89%E3%83%8A%E3%83%90%E3%83%91%E3%83%92%E3%83%95%E3%83%96%E3%83%97%E3%83%9A%E3%83%9B%E3%83%9D%E3%83%9E%E3%83%A0%E3%83%A1%E3%83%A2%E3%83%A9%E3%83%AA%E3%83%AB%E3%83%AC%E3%83%B3%E3%83%BB%E3%83%BC%E4%B8%80%E4%B8%8A%E4%B8%8D%E4%B8%A1%E4%B8%AD%E4%B8%B8%E4%BA%88%E4%BA%BA%E4%BB%A5%E4%BB%B2%E4%BB%BB%E4%BD%8D%E4%BD%95%E4%BD%9C%E4%BD%BF%E4%BE%8B%E4%BF%A1%E5%80%8B%E5%85%88%E5%85%A5%E5%86%85%E5%86%B7%E5%87%BA%E5%88%86%E5%88%9D%E5%88%A5%E5%89%8D%E5%8B%95%E5%8F%8D%E5%8F%8E%E5%8F%96%E5%8F%A3%E5%8F%B0%E5%8F%B3%E5%90%88%E5%90%8C%E5%90%8D%E5%91%82%E5%91%8A%E5%95%8F%E5%9B%9E%E5%9B%B2%E5%A4%A7%E5%A7%8B%E5%AD%90%E5%AD%97%E5%AE%9A%E5%AE%B6%E5%AF%BE%E5%B0%8F%E5%B0%91%E5%B1%8B%E5%B7%AE%E5%B9%85%E5%B9%B4%E5%BA%83%E5%BA%A6%E5%BD%93%E5%BD%B9%E5%BF%8D%E6%81%AF%E6%83%B3%E6%84%8F%E6%84%9F%E6%85%8B%E6%8A%BC%E6%8C%87%E6%93%8D%E6%95%B0%E6%96%99%E6%96%B9%E6%97%8F%E6%98%A0%E6%9C%80%E6%9C%AB%E6%9C%AC%E6%9E%9C%E6%9E%A0%E6%AC%A1%E6%AD%A3%E6%B1%81%E6%B1%BA%E6%B6%88%E6%B7%B1%E6%B8%A1%E7%82%B9%E7%84%A1%E7%86%B1%E7%89%A9%E7%8A%B6%E7%94%A8%E7%94%BB%E7%95%AA%E7%99%BB%E7%9B%9B%E7%9B%AE%E7%9B%B8%E7%A0%A6%E7%A4%BA%E7%A7%92%E7%A9%BA%E7%AB%AF%E7%AC%AC%E7%AD%94%E7%AF%84%E7%B4%B0%E7%B5%90%E7%B8%AE%E7%BD%AE%E8%80%85%E8%87%AA%E8%91%89%E8%A1%A8%E8%A6%81%E8%A6%8B%E8%A6%9A%E8%A7%A3%E8%A7%A6%E8%A8%80%E8%A8%88%E8%A9%B1%E8%AA%AD%E8%AB%87%E8%B3%AA%E8%B6%B3%E8%BE%BC%E8%BF%91%E9%80%81%E9%81%8A%E9%81%B8%E9%81%BF%E9%83%A8%E9%85%8D%E9%87%91%E9%8C%B2%E9%96%8B%E9%96%93%E9%9D%A2%E9%A0%86%E9%A1%8C%E9%A2%A8%EF%BC%88%EF%BC%89%EF%BC%8B%EF%BC%90%EF%BC%99%EF%BC%9A%EF%BC%9F%EF%BD%9C" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&family=RocknRoll+One&display=swap&text=-%2F0123456789%3A%40ABCDEFGHIJKLMNOPQRSTUVWXY_abcdefghijklmnopqrstuvwxyz%C2%A9%C2%B7%E2%80%A6%E2%86%92%E2%87%84%E2%88%92%E3%80%81%E3%80%82%E3%80%87%E3%80%8C%E3%80%8D%E3%80%9C%E3%81%81%E3%81%82%E3%81%84%E3%81%86%E3%81%88%E3%81%8A%E3%81%8B%E3%81%8C%E3%81%8D%E3%81%8E%E3%81%8F%E3%81%90%E3%81%91%E3%81%93%E3%81%94%E3%81%95%E3%81%96%E3%81%97%E3%81%98%E3%81%99%E3%81%9A%E3%81%9B%E3%81%9C%E3%81%9D%E3%81%9F%E3%81%A0%E3%81%A1%E3%81%A3%E3%81%A4%E3%81%A6%E3%81%A7%E3%81%A8%E3%81%A9%E3%81%AA%E3%81%AB%E3%81%AC%E3%81%AD%E3%81%AE%E3%81%AF%E3%81%B0%E3%81%B1%E3%81%B2%E3%81%B3%E3%81%B5%E3%81%B6%E3%81%B7%E3%81%B8%E3%81%B9%E3%81%BB%E3%81%BC%E3%81%BD%E3%81%BE%E3%81%BF%E3%82%80%E3%82%81%E3%82%82%E3%82%83%E3%82%84%E3%82%85%E3%82%86%E3%82%87%E3%82%88%E3%82%89%E3%82%8A%E3%82%8B%E3%82%8C%E3%82%8D%E3%82%8F%E3%82%92%E3%82%93%E3%82%A2%E3%82%A3%E3%82%A4%E3%82%A6%E3%82%AA%E3%82%AD%E3%82%AF%E3%82%B0%E3%82%B2%E3%82%B3%E3%82%B5%E3%82%B6%E3%82%B7%E3%82%B8%E3%82%B9%E3%82%BD%E3%82%BF%E3%83%81%E3%83%83%E3%83%84%E3%83%86%E3%83%87%E3%83%88%E3%83%89%E3%83%8A%E3%83%8B%E3%83%90%E3%83%91%E3%83%92%E3%83%94%E3%83%95%E3%83%96%E3%83%97%E3%83%9A%E3%83%9B%E3%83%9C%E3%83%9D%E3%83%9E%E3%83%A0%E3%83%A1%E3%83%A2%E3%83%A3%E3%83%A5%E3%83%A7%E3%83%A9%E3%83%AA%E3%83%AB%E3%83%AC%E3%83%AD%E3%83%B3%E3%83%BB%E3%83%BC%E4%B8%80%E4%B8%8A%E4%B8%8B%E4%B8%8D%E4%B8%A1%E4%B8%A6%E4%B8%AD%E4%B8%B8%E4%B9%B1%E4%BA%88%E4%BA%BA%E4%BB%8A%E4%BB%98%E4%BB%A5%E4%BB%B2%E4%BB%BB%E4%BC%91%E4%BC%9A%E4%BC%9D%E4%BD%8D%E4%BD%93%E4%BD%95%E4%BD%9C%E4%BD%BF%E4%BE%8B%E4%BF%9D%E4%BF%A1%E5%80%8B%E5%80%8D%E5%80%A4%E5%81%A5%E5%81%B4%E5%82%B7%E5%85%83%E5%85%88%E5%85%89%E5%85%A5%E5%85%A8%E5%85%B1%E5%85%B7%E5%86%85%E5%86%8D%E5%86%AC%E5%86%B7%E5%87%BA%E5%88%80%E5%88%86%E5%88%87%E5%88%9D%E5%88%A4%E5%88%A5%E5%88%BA%E5%89%8A%E5%89%8D%E5%89%A3%E5%8A%A0%E5%8B%95%E5%8D%97%E5%8D%98%E5%8D%B0%E5%8F%8D%E5%8F%8E%E5%8F%96%E5%8F%A3%E5%8F%AF%E5%8F%B0%E5%8F%B3%E5%90%88%E5%90%8C%E5%90%8D%E5%90%91%E5%91%82%E5%91%8A%E5%91%B3%E5%91%BC%E5%92%8C%E5%93%81%E5%95%8F%E5%96%B6%E5%9B%9E%E5%9B%B2%E5%9B%B3%E5%9B%BD%E5%9C%9F%E5%9C%B0%E5%9F%BA%E5%A0%B1%E5%A0%B4%E5%A2%A8%E5%A4%89%E5%A4%8F%E5%A4%96%E5%A4%9A%E5%A4%9C%E5%A4%A2%E5%A4%A7%E5%A4%B1%E5%A5%A5%E5%A5%BD%E5%A7%8B%E5%AD%90%E5%AD%97%E5%AD%A3%E5%AE%9A%E5%AE%9F%E5%AE%B6%E5%AE%BF%E5%AF%84%E5%AF%92%E5%AF%BE%E5%B0%8F%E5%B0%91%E5%B0%BE%E5%B1%8B%E5%B7%A6%E5%B7%AE%E5%B7%BB%E5%B8%B8%E5%B9%85%E5%B9%B3%E5%B9%B4%E5%BA%83%E5%BA%A6%E5%BC%B1%E5%BC%B7%E5%BD%93%E5%BD%A2%E5%BD%B1%E5%BD%B9%E5%BE%85%E5%BE%8C%E5%BF%83%E5%BF%8D%E5%BF%98%E6%80%96%E6%82%AA%E6%83%85%E6%83%B3%E6%84%8F%E6%84%9F%E6%85%8B%E6%85%A2%E6%88%BB%E6%89%80%E6%89%8B%E6%8A%9E%E6%8A%BC%E6%8C%81%E6%8C%87%E6%8D%A8%E6%8E%83%E6%8F%8F%E6%8F%9B%E6%93%8D%E6%95%97%E6%95%B0%E6%96%87%E6%96%99%E6%96%9C%E6%96%AC%E6%96%B0%E6%96%B9%E6%97%8F%E6%97%A2%E6%97%A5%E6%98%8E%E6%98%94%E6%98%A0%E6%98%A5%E6%99%82%E6%99%AF%E6%99%B4%E6%9B%B8%E6%9B%BF%E6%9C%80%E6%9C%88%E6%9C%89%E6%9C%9D%E6%9C%9F%E6%9C%AB%E6%9C%AC%E6%9C%AD%E6%9C%B1%E6%9D%A5%E6%9D%BE%E6%9E%9C%E6%9E%A0%E6%A1%9C%E6%A2%85%E6%A5%BD%E6%AC%84%E6%AC%A1%E6%AD%A2%E6%AD%A3%E6%AE%8B%E6%AF%8E%E6%B0%97%E6%B1%81%E6%B1%BA%E6%B2%88%E6%B3%A2%E6%B3%A3%E6%B4%8B%E6%B4%BE%E6%B5%AE%E6%B6%88%E6%B7%B1%E6%B8%85%E6%B8%9B%E6%B8%A1%E6%BA%96%E6%BA%9C%E6%BC%94%E6%BD%94%E7%82%B9%E7%84%A1%E7%85%A7%E7%86%B1%E7%89%88%E7%89%A9%E7%89%B9%E7%8A%B6%E7%8E%87%E7%8F%BE%E7%94%98%E7%94%9F%E7%94%A8%E7%94%BB%E7%95%AA%E7%96%B2%E7%99%92%E7%99%BA%E7%99%BB%E7%99%BD%E7%9A%84%E7%9B%9B%E7%9B%AE%E7%9B%B4%E7%9B%B8%E7%9C%9F%E7%9C%A0%E7%9E%AC%E7%9F%A5%E7%9F%AD%E7%A0%A6%E7%A2%BA%E7%A4%BA%E7%A7%8B%E7%A7%92%E7%A8%AE%E7%A9%BA%E7%AA%93%E7%AB%8B%E7%AB%AF%E7%AB%B9%E7%AC%AC%E7%AD%8B%E7%AD%94%E7%AE%B1%E7%AF%80%E7%AF%84%E7%B0%A1%E7%B2%92%E7%B4%85%E7%B4%9A%E7%B4%A0%E7%B4%B0%E7%B5%82%E7%B5%90%E7%B5%B5%E7%B6%9A%E7%B7%91%E7%B7%B4%E7%B8%81%E7%B8%AE%E7%BD%AE%E7%BF%92%E8%80%85%E8%83%8C%E8%87%AA%E8%89%B2%E8%8B%A6%E8%91%89%E8%A1%8C%E8%A1%A8%E8%A3%8F%E8%A6%81%E8%A6%8B%E8%A6%9A%E8%A6%B3%E8%A7%92%E8%A7%A3%E8%A7%A6%E8%A8%80%E8%A8%88%E8%A8%AD%E8%A8%B1%E8%A9%B1%E8%AA%8D%E8%AA%9E%E8%AA%AC%E8%AA%AD%E8%AA%B0%E8%AB%87%E8%AD%98%E8%B3%80%E8%B3%AA%E8%B5%B7%E8%B6%8A%E8%B6%B3%E8%BA%AB%E8%BB%BD%E8%BE%BC%E8%BF%91%E8%BF%B7%E8%BF%BD%E9%80%81%E9%80%8F%E9%80%94%E9%80%9A%E9%80%9F%E9%81%85%E9%81%8A%E9%81%8B%E9%81%8E%E9%81%B8%E9%81%BF%E9%83%A8%E9%83%BD%E9%85%8D%E9%87%8D%E9%87%91%E9%8C%B2%E9%8D%8B%E9%95%B7%E9%96%83%E9%96%8B%E9%96%93%E9%97%98%E9%98%B2%E9%99%A4%E9%99%BA%E9%9A%9B%E9%9B%91%E9%9B%A2%E9%9B%A3%E9%9B%A8%E9%9B%AA%E9%9C%9E%E9%9D%99%E9%9D%9E%E9%9D%A2%E9%9F%B3%E9%9F%BF%E9%A0%86%E9%A0%AD%E9%A0%BC%E9%A1%8C%E9%A1%9E%E9%A2%A8%E9%A3%9B%E9%A3%BD%E9%A3%BE%E9%A8%93%E9%B3%B4%EF%BC%88%EF%BC%89%EF%BC%8B%EF%BC%8F%EF%BC%90%EF%BC%99%EF%BC%9A%EF%BC%9D%EF%BC%9E%EF%BC%9F%EF%BD%9C" rel="stylesheet">
 <!-- k-fonts:end -->
-<!-- 共通部品 D4（kkp-kit を kit/ にコピーしたもの。中は手で直さず kkp-kit 側で直して sync.sh） -->
 <link rel="stylesheet" href="/kit/kit.css">
-<script src="/kit/kit.js" defer></script>
 <script src="/js/odai.js"></script>
 <script src="/js/code.js"></script>
 <style>
@@ -100,12 +106,20 @@ button,input,select{font:inherit;color:inherit}
 .mo-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:2px solid var(--k-sumi)}
 .mo-top>a{color:var(--k-sumi);text-decoration:none;font-family:var(--k-bold);font-size:16px;letter-spacing:.06em}
 .mo-top>small{font-size:14px;color:var(--k-text-2)}
-.mo-viewbar{display:flex;align-items:center;gap:12px;margin-left:auto;font-size:14px}
-.mo-viewbar .st{color:var(--k-text-2)}
-.mo-viewbar .st.on{color:var(--k-sumi);font-weight:700}
-.mo-viewbar .st.on::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:#2f8a4a;margin-right:6px}
-.mo-viewbar a{color:var(--k-sumi);font-weight:700}
-.mo-viewbar .k-btn-sub{min-height:44px;padding:0 14px;font-size:15px;box-shadow:var(--k-sh-s)}
+.mo-viewst{display:flex;align-items:center;gap:16px;margin-left:auto;font-size:14px}
+.mo-viewst a{color:var(--k-sumi);font-weight:700}
+.mo-viewbar{flex-basis:100%}
+.mo-packs>button{font-size:14px;padding:4px 8px}
+.op-resume{grid-column:1/-1;margin:8px 0 0}
+.rb-res{display:flex;align-items:center;justify-content:center;gap:12px;margin-top:10px}
+.rb-res .k-result b{font-size:28px}
+.rb-res .sa{font-size:20px;font-weight:800}
+.rm-end{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.rm-end .k-result{flex:1 1 200px}
+.rm-end .k-result b small{display:inline;font-size:18px;color:var(--k-text-2)}
+.rm-log .k-num{font-family:var(--k-bold);font-weight:400;font-size:18px}
+.rm-log .p0{color:var(--k-text-2)}
+.rm-msg .k-pass{margin:8px auto 4px;width:min(220px,64%)}
 h1.mo-h1{margin:20px 0 6px;font-family:var(--k-brush);font-weight:400;font-size:32px;letter-spacing:.06em;line-height:1.25}
 .mo-lead{margin:0 0 12px;font-size:15px;line-height:1.7;color:var(--k-text-2)}
 .mo-modes{margin:8px 0 0}
@@ -222,11 +236,8 @@ body.stream .mo-modes>button{min-height:52px;padding:4px 12px}
 <div class="mo-wrap" id="app">
   <header class="mo-top">
     <a href="/">みんなのものさし</a><small id="topNote">登録不要・無料</small>
-    <div class="mo-viewbar" id="viewBar" hidden>
-      <span class="st" id="viewSt">表示ページ: 開いていません</span>
-      <button type="button" class="k-btn k-btn-sub" id="viewOpen">表示ページを別ウィンドウで開く</button>
-      <a href="/haishin/">使い方</a>
-    </div>
+    <span class="mo-viewst" id="viewSt" hidden><span class="k-live" data-k-live="kkp-monosashi">表示ページ：つながっていません</span><a href="/haishin/">使い方</a></span>
+    <div class="mo-viewbar k-view-open" id="viewBar" data-k-view="/view/" data-k-ch="kkp-monosashi" data-k-name="moView" hidden></div>
   </header>
 
   <!-- ===== 遊び方を選ぶ（はぁ・ito と同じ3択） ===== -->
@@ -247,12 +258,16 @@ body.stream .mo-modes>button{min-height:52px;padding:4px 12px}
     <div class="rm-main">
       <div class="rm-setup" id="rSetup">
         <section>
-          <label class="lbl" for="rTitleIn">タイトル（「〇〇のものさし」の〇〇）</label>
-          <input class="txt" id="rTitleIn" type="text" autocomplete="off" enterkeyhint="done" placeholder="例: みかん" maxlength="12">
+          <span class="lbl">タイトル</span>
+          <label class="k-stream-title" id="rTitleBox"><input id="rTitleIn" type="text" autocomplete="off" enterkeyhint="done" placeholder="みんな" maxlength="12" aria-label="タイトルの名前の部分"><span>のものさし</span></label>
         </section>
-        <section class="rm-two">
-          <div><label class="lbl" for="rPack">お題</label><select class="sel" id="rPack"></select></div>
-          <div><label class="lbl" for="rLaps">回数</label><select class="sel" id="rLaps"><option value="1">1人1回ずつ</option><option value="2">1人2回ずつ</option></select></div>
+        <section>
+          <span class="lbl">お題</span>
+          <div class="k-seg k-seg-3 mo-packs" role="group" aria-label="お題" id="rPack"></div>
+        </section>
+        <section>
+          <span class="lbl">回数</span>
+          <div class="k-seg k-seg-2" role="group" aria-label="回数" id="rLaps" style="max-width:360px"><button type="button" data-v="1">1人1回ずつ</button><button type="button" data-v="2">1人2回ずつ</button></div>
         </section>
         <section>
           <span class="lbl">遊ぶ人（2〜8人・この順にヒント役）</span>
@@ -292,19 +307,24 @@ body.stream .mo-modes>button{min-height:52px;padding:4px 12px}
 
   <!-- ===== 配信（操作画面）。映すのは /view/ ===== -->
   <main class="stage" id="stage" data-mode="live" hidden>
+    <div class="op-resume" id="oResume" hidden></div>
     <div class="op">
       <section><ol class="steps" id="steps"></ol></section>
-      <section class="op-two">
-        <div><label class="lbl" for="oTitle">タイトル（〇〇のものさし）</label><input class="txt" id="oTitle" type="text" autocomplete="off" enterkeyhint="done" placeholder="例: みかん" maxlength="12"></div>
-        <div><label class="lbl" for="oPack">お題</label><select class="sel" id="oPack"></select></div>
+      <section>
+        <span class="lbl">タイトル</span>
+        <label class="k-stream-title" id="oTitleBox"><input id="oTitle" type="text" autocomplete="off" enterkeyhint="done" placeholder="みんな" maxlength="12" aria-label="タイトルの名前の部分"><span>のものさし</span></label>
+      </section>
+      <section>
+        <span class="lbl">お題</span>
+        <div class="k-seg k-seg-3 mo-packs" role="group" aria-label="お題" id="oPack"></div>
       </section>
       <section>
         <div class="round"><span id="oRound">第1問 / 5</span><span>合計 <b id="oTotal">0</b>点</span></div>
         <div class="secret" id="oSecret"></div>
       </section>
       <section data-for="live">
-        <label class="lbl" for="oHint">ヒント（言うだけでもよい。入れると画面に出る）</label>
-        <input class="txt" id="oHint" type="text" autocomplete="off" enterkeyhint="next" placeholder="例: みそ汁" maxlength="16" disabled>
+        <label class="lbl" for="oHint">ヒント（12字まで。入れると画面に出る）</label>
+        <input class="txt" id="oHint" type="text" autocomplete="off" enterkeyhint="next" placeholder="例: みそ汁" maxlength="12" disabled>
       </section>
       <section data-for="self" id="oQrBox" hidden>
         <div class="qrstate"><p id="oQrTxt"></p><button type="button" class="k-btn k-btn-sm" id="oQrToggle">もう一度大きく</button></div>
@@ -396,17 +416,23 @@ function nextTopic() {
   store.set(UKEY, JSON.stringify(used));
   return ti;
 }
-function packOptions(sel) {
-  const cnt = k => k === 'all' ? TOPICS.length : TOPICS.filter(t => t[2] === k).length;
-  sel.innerHTML = Object.keys(PACKS).map(k => `<option value="${k}">${PACKS[k]}（${cnt(k)}）</option>`).join('');
-  sel.value = pack;
-  sel.addEventListener('change', () => { pack = sel.value; store.set(PKEY, pack); $('#rPack').value = pack; $('#oPack').value = pack; });
+// お題・回数は k-seg（選択中＝朱）
+function paintSegs() {
+  document.querySelectorAll('.mo-packs>button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === pack)));
+  document.querySelectorAll('#rLaps>button').forEach(b => b.setAttribute('aria-pressed', String(+b.dataset.v === R.laps)));
 }
-packOptions($('#rPack')); packOptions($('#oPack'));
+function packSeg(el) {
+  const cnt = k => k === 'all' ? TOPICS.length : TOPICS.filter(t => t[2] === k).length;
+  el.innerHTML = Object.keys(PACKS).map(k => `<button type="button" data-v="${k}">${PACKS[k]}<small>${cnt(k)}個</small></button>`).join('');
+  el.addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; pack = b.dataset.v; store.set(PKEY, pack); paintSegs(); });
+}
+packSeg($('#rPack')); packSeg($('#oPack'));
 
-// ---- タイトル「〇〇のものさし」（この端末に覚える・空なら「みんな」） ----
+// ---- タイトル「〇〇のものさし」（kit の k-stream-title。この端末に覚える・空なら「みんな」） ----
 const TKEY = 'mo-title';
-const titleText = () => (String(store.get(TKEY) || '').trim() || 'みんな') + 'のものさし';
+const TT = KKit.streamTitle('#rTitleBox', { key: TKEY, onChange: () => { $('#rTitle').textContent = titleText(); } });
+KKit.streamTitle('#oTitleBox', { key: TKEY, onChange: () => sendView() });
+const titleText = () => TT.text();
 
 // ---- 目盛りを指・マウスで動かす（ドラッグ・キー） ----
 function makeSlider(el, get, set, active) {
@@ -445,8 +471,7 @@ $('#rNames').addEventListener('input', () => { R.names = readNames(); store.set(
 $('#rNames').addEventListener('click', e => { const b = e.target.closest('[data-del]'); if (!b || b.disabled) return; R.names = readNames(); R.names.splice(+b.dataset.del, 1); store.set(NKEY, JSON.stringify(R.names)); drawNames(); });
 $('#rNames').addEventListener('keydown', e => { if (e.key !== 'Enter') return; e.preventDefault(); const ins = [...document.querySelectorAll('#rNames input')]; const k = ins.indexOf(e.target); if (ins[k + 1]) ins[k + 1].focus(); else e.target.blur(); });
 $('#rAdd').addEventListener('click', () => { R.names = readNames(); if (R.names.length >= 8) return; R.names.push(''); drawNames(); const ins = document.querySelectorAll('#rNames input'); ins[ins.length - 1].focus(); });
-$('#rTitleIn').addEventListener('input', () => { store.set(TKEY, $('#rTitleIn').value.trim()); $('#rTitle').textContent = titleText(); });
-$('#rTitleIn').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#rTitleIn').blur(); } });
+$('#rLaps').addEventListener('click', e => { const b = e.target.closest('[data-v]'); if (!b) return; R.laps = +b.dataset.v; paintSegs(); });
 
 const who = () => R.names[R.i % R.names.length];
 const nm = n => esc(n) + 'さん';
@@ -454,7 +479,7 @@ function roomStart() {
   R.names = readNames().map((n, i) => n || `${i + 1}人目`);
   if (R.names.length < 2) return;
   store.set(NKEY, JSON.stringify(R.names));
-  R.laps = +$('#rLaps').value; R.rounds = R.names.length * R.laps; R.i = 0; R.total = 0; R.log = [];
+  R.rounds = R.names.length * R.laps; R.i = 0; R.total = 0; R.log = [];
   track('mono_start', { mode: 'room' });
   roomPass();
 }
@@ -475,7 +500,7 @@ $('#rMain').addEventListener('click', () => {
   else if (R.phase === 'reveal') { R.i++; if (R.i >= R.rounds) { R.phase = 'end'; track('mono_end', { mode: 'room' }); renderRoom(); loadAd(); } else roomPass(); }
   else if (R.phase === 'end') { R.i = 0; R.total = 0; R.log = []; $('#adWrap').hidden = true; track('mono_start', { mode: 'room' }); roomPass(); }
 });
-$('#rQuit').addEventListener('click', () => { R.phase = 'setup'; $('#adWrap').hidden = true; renderRoom(); });
+KKit.twice('#rQuit', { text: 'もう一度押すとやめる', when: () => R.phase !== 'setup' && R.phase !== 'end', ok: () => { R.phase = 'setup'; $('#adWrap').hidden = true; renderRoom(); } });
 function renderRoom() {
   const p = R.phase, [L, Rt] = TOPICS[R.ti];
   const was = document.body.classList.contains('playing');
@@ -490,19 +515,22 @@ function renderRoom() {
   $('#rQuit').hidden = p === 'setup';
   const bar = $('#rbBar');
   bar.classList.toggle('live', p === 'guess'); bar.tabIndex = p === 'guess' ? 0 : -1;
-  if (p === 'setup') { $('#rTitleIn').value = store.get(TKEY) || ''; drawNames(); $('#rLaps').value = R.laps; $('#rPack').value = pack; }
+  if (p === 'setup') { $('#rTitleIn').value = store.get(TKEY) || ''; drawNames(); paintSegs(); }
   if (p === 'pass') {
-    $('#rMsg').innerHTML = `<p class="k">第${R.i + 1}問 / ${R.rounds} ・ ヒント役</p><h2>${nm(who())}に<br>スマホを渡してね</h2><p>ヒント役だけが画面を見ます。ほかの人は見ないでね。</p><p class="topic">お題: ${esc(L)} 〜 ${esc(Rt)}</p>`;
+    $('#rMsg').innerHTML = `<p class="k">第${R.i + 1}問 / ${R.rounds} ・ ヒント役</p><h2>${nm(who())}に<br>スマホを渡してね</h2><img class="k-pass" src="/kit/img/k-pass-phone.webp" alt="" width="320" height="198"><p>ヒント役だけが画面を見ます。ほかの人は見ないでね。</p><p class="topic">お題: ${esc(L)} 〜 ${esc(Rt)}</p>`;
   }
   if (p === 'end') {
     const best = R.log.slice().sort((a, b) => a.d - b.d)[0], max = R.rounds * 4;
-    $('#rMsg').innerHTML = `<p class="k">${R.rounds}問の合計（みんなで）</p><div class="total">${R.total}点 <small>/ ${max}点</small></div><p>${R.total >= max * .6 ? '息がぴったり。' : R.total >= max * .35 ? 'いい感じ。' : '次はもっと近くへ。'}いちばん近かったのは ${nm(best.who)}のヒント（差 ${best.d}）。</p>
-      <ul class="rm-log">${R.log.map(l => `<li><span>${nm(l.who)} ・ ${esc(TOPICS[l.ti][0])}〜${esc(TOPICS[l.ti][1])}</span><b>${l.p}点</b></li>`).join('')}</ul>`;
+    const g = R.total >= max * .75 ? '名人' : R.total >= max * .5 ? '上手' : '健闘';
+    $('#rMsg').innerHTML = `<div class="rm-end"><div class="k-result k-result-lg"><small>${R.rounds}問の合計</small><b class="k-num">${R.total}<small>点 / ${max}点</small></b></div><span class="k-stamp k-stamp-lg${g === '健闘' ? ' k-stamp-sumi' : ''} k-reveal-stamp" id="rEndStamp">${g}</span></div><p>いちばん近かったのは ${nm(best.who)}のヒント（差 ${best.d}）。</p>
+      <ul class="rm-log">${R.log.map(l => `<li><span>${nm(l.who)} ・ ${esc(TOPICS[l.ti][0])}〜${esc(TOPICS[l.ti][1])}</span><b class="k-num${l.p ? '' : ' p0'}">${l.p}点</b></li>`).join('')}</ul>`;
+    KKit.reveal('#rEndStamp');
   }
   if (p === 'peek' || p === 'guess' || p === 'reveal') {
     $('#rL').textContent = L; $('#rR').textContent = Rt;
     zonesAt(['rz2', 'rz3', 'rz4'], R.t); $('#rMark').style.left = R.t + '%';
     bar.classList.toggle('k-open', p !== 'guess');
+    bar.classList.toggle('k-ruler-hit', p === 'reveal' && Math.abs(R.g - R.t) <= 3);
     $('#rCover').hidden = p === 'peek';
     $('#rNeedle').hidden = p === 'peek'; $('#rGrip').hidden = p === 'peek';
     if (p === 'peek') {
@@ -518,7 +546,8 @@ function renderRoom() {
       const d = Math.abs(R.g - R.t), pt = SC.of(d);
       $('#rWho').innerHTML = `ヒント役 ${nm(who())}`;
       renderRoomGuess();
-      $('#rBig').innerHTML = `<span class="fadeup" style="animation-delay:.45s">正解 ${R.t} ・ 差 ${d} → <span class="pt">${pt}点</span></span>`;
+      $('#rBig').innerHTML = `<div class="rb-res k-reveal" id="rRes"><div class="k-result k-result-sm"><small>正解</small><b class="k-num">${R.t}</b></div><span class="sa">差 <b class="k-num">${d}</b></span><span class="k-stamp k-stamp-lg${pt ? '' : ' k-stamp-sumi'} k-reveal-stamp" id="rStamp">${pt}点</span></div>`;
+      $('#rRes').style.animationDelay = '.45s'; $('#rStamp').style.animationDelay = '.6s'; KKit.reveal('#rRes'); KKit.reveal('#rStamp');
       $('#rNote').textContent = `みんなの合計 ${R.total}点`;
     }
   }
@@ -530,9 +559,9 @@ const ROUNDS = 5, QR_BIG_MS = 15000;
 const st = { mode: 'live', round: 0, total: 0, phase: 'idle', ti: 0, target: 50, guess: null, hint: '', near: null, log: [], code: '', qrBig: false, qrUntil: 0 };
 const STEPS = { live: ['1. お題を出す', '2. 予想を入れる', '3. めくる'], self: ['1. お題を出す', '2. コメントを見て予想を動かす', '3. めくる'] };
 
-// /view/ へ送る（同じブラウザの中だけ。BroadcastChannel＋localStorage）。正解はめくったあとだけ送る
-let CH = null; try { CH = new BroadcastChannel('kkp-monosashi'); } catch (e) {}
-let lastHello = 0;
+// /view/ へ送る（kit の KKit.live。同じブラウザの中だけ）。正解はめくったあとだけ送る
+const LIVE = KKit.live({ ch: 'kkp-monosashi', role: 'op' });
+let RES = { pending: false, save() {}, clear() {} };   // 続きから（配信の2つだけ。init で作る）
 function viewState() {
   const s = st, inRound = s.phase !== 'idle' && s.phase !== 'end', o = { title: titleText(), mode: s.mode, phase: s.phase, round: s.round, rounds: ROUNDS, total: s.total };
   if (inRound) {
@@ -546,16 +575,10 @@ function viewState() {
 }
 function sendView() {
   if (mode === 'room') return;
-  const d = { t: Date.now(), state: viewState() };
-  try { localStorage.setItem('mo-view', JSON.stringify(d)); } catch (e) {}
-  try { if (CH) CH.postMessage(d); } catch (e) {}
-  store.set('mo-run', JSON.stringify({ at: Date.now(), st }));
+  LIVE.send(viewState());
+  if (!RES.pending) { if (st.phase !== 'idle') RES.save(Object.assign({}, st)); else RES.clear(); }   // 選ぶまでは前回の続きを消さない
 }
-if (CH) CH.onmessage = e => { if (e.data && e.data.hello) { const first = Date.now() - lastHello > 7000; lastHello = Date.now(); viewStatus(); if (first) sendView(); } };
-window.addEventListener('storage', e => { if (e.key === 'mo-view-hello') { lastHello = Date.now(); viewStatus(); } });
-function viewStatus() { const on = Date.now() - lastHello < 7000, e = $('#viewSt'); e.textContent = on ? '表示ページ: つながっています' : '表示ページ: 開いていません'; e.classList.toggle('on', on); }
-setInterval(viewStatus, 1000);
-$('#viewOpen').addEventListener('click', () => { let w = null; try { w = window.open('/view/', 'moView', 'popup=yes,width=1280,height=720'); } catch (e) {} if (!w) location.href = '/view/'; track('mono_view_open'); });
+$('#viewBar').addEventListener('k-view-open', () => track('mono_view_open'));
 
 function newRound() {
   st.round++; st.ti = nextTopic(); st.target = rint(6, 94); st.near = null; st.hint = '';
@@ -580,11 +603,12 @@ function reveal() {
   if (st.mode === 'live' && finePointer()) $('#oNear').focus();
 }
 function finish() { st.phase = 'end'; track('mono_end', { mode: st.mode }); renderStage(); }
-function resetAll() { Object.assign(st, { round: 0, total: 0, phase: 'idle', guess: null, hint: '', near: null, log: [], code: '', qrBig: false }); resetArm = false; renderStage(); }
+function resetAll() { Object.assign(st, { round: 0, total: 0, phase: 'idle', guess: null, hint: '', near: null, log: [], code: '', qrBig: false }); renderStage(); }
 
-$('#oTitle').addEventListener('input', () => { store.set(TKEY, $('#oTitle').value.trim()); sendView(); });
-$('#oTitle').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#oTitle').blur(); } });
-$('#oHint').addEventListener('input', () => { st.hint = $('#oHint').value.trim(); sendView(); });
+// ヒントは確定した字だけ送る（変換中の字は映さない）
+const hintIn = e => { if (e && e.isComposing) return; st.hint = $('#oHint').value.trim().slice(0, 12); sendView(); };
+$('#oHint').addEventListener('input', hintIn);
+$('#oHint').addEventListener('compositionend', () => hintIn());
 $('#oHint').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); $('#oNum').focus(); } });
 $('#oManual').addEventListener('submit', e => { e.preventDefault(); const v = parseInt(toHalf($('#oNum').value), 10); if (!isNaN(v) && v >= 0 && v <= 100) { setGuess(v); $('#oNum').select(); } });
 $('#oNear').addEventListener('input', () => { const v = parseInt(toHalf($('#oNear').value), 10); st.near = !isNaN(v) && v >= 0 && v <= 100 ? v : null; sendView(); });
@@ -592,12 +616,7 @@ $('#oNear').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preven
 makeSlider($('#oSlider'), () => st.guess, v => setGuess(v), () => st.phase === 'guess' || st.phase === 'set');
 document.querySelector('#stage .nudge').addEventListener('click', e => { const b = e.target.closest('[data-d]'); if (b && (st.phase === 'guess' || st.phase === 'set')) setGuess((st.guess ?? 50) + +b.dataset.d); });
 $('#oQrToggle').addEventListener('click', () => { if (st.qrBig && Date.now() < st.qrUntil) st.qrBig = false; else { st.qrBig = true; st.qrUntil = Date.now() + QR_BIG_MS; } renderQrState(); sendView(); });
-let resetArm = false;
-$('#oReset').addEventListener('click', () => {
-  if (st.phase === 'idle') return;
-  if (!resetArm) { resetArm = true; $('#oReset').textContent = 'もう一度押すと最初から'; setTimeout(() => { resetArm = false; $('#oReset').textContent = '最初から'; }, 3000); return; }
-  $('#oReset').textContent = '最初から'; resetAll();
-});
+KKit.twice('#oReset', { text: 'もう一度押すと最初から', ok: () => { if (st.phase !== 'idle') resetAll(); } });
 $('#oMain').addEventListener('click', () => {
   if (st.phase === 'idle') newRound();
   else if (st.phase === 'set') reveal();
@@ -668,6 +687,14 @@ addEventListener('resize', () => { if (mode !== 'room' && !wide()) setMode('room
 // ================= 遊び方を選ぶ =================
 const MKEY = 'mo-mode';
 let mode = 'room';
+function inRound() { return mode === 'room' ? (R.phase !== 'setup' && R.phase !== 'end') : (st.phase !== 'idle' && st.phase !== 'end'); }
+// 遊び方を選ぶ: 配信のオン・オフは kit の KKit.stream（読み直す）。配信の2つの間はその場で切り替える
+function chooseMode(m) {
+  if (m === mode || (m !== 'room' && !wide())) return;
+  store.set(MKEY, m);
+  if ((m !== 'room') !== KKit.stream.on) { KKit.stream.set(m !== 'room', { m: null }); return; }
+  setMode(m);
+}
 function syncChooser() {
   const w = wide();
   document.querySelectorAll('.mo-modes>button').forEach(b => {
@@ -678,37 +705,39 @@ function syncChooser() {
 }
 function setMode(m, opts) {
   if (m !== 'room' && !wide()) m = 'room';
-  if (m !== 'room' && window.__moAdsLoaded()) { store.set(MKEY, m); location.href = '/?mode=stream&m=' + m; return; }
   mode = m; store.set(MKEY, m);
-  window.__moNoAds = m !== 'room' || !!window.__kkpTest;
   document.body.classList.toggle('stream', m !== 'room');
-  $('#viewBar').hidden = m === 'room';
+  $('#viewBar').hidden = m === 'room'; $('#viewSt').hidden = m === 'room';
   $('#topNote').textContent = m === 'room' ? '登録不要・無料' : '配信モード（広告なし）';
   $('#room').hidden = m !== 'room';
   $('#stage').hidden = m === 'room';
   syncChooser();
   if (m === 'room') { document.body.classList.remove('playing'); $('#app').style.zoom = ''; renderRoom(); return; }
-  $('#oTitle').value = store.get(TKEY) || '';
-  $('#oPack').value = pack;
+  paintSegs();
   if (st.mode !== m) { st.mode = m; resetAll(); } else renderStage();
 }
-document.querySelectorAll('.mo-modes>button').forEach(b => b.addEventListener('click', () => { if (!b.disabled) setMode(b.dataset.mode); }));
+// 回の途中で遊び方を変えると、その回が消えるので2回押し
+document.querySelectorAll('.mo-modes>button').forEach(b => KKit.twice(b, { text: 'もう一度押すと切り替え', when: () => inRound() && b.dataset.mode !== mode, ok: () => chooseMode(b.dataset.mode) }));
 
 // お題の例（読みもの）
 $('#exList').innerHTML = [0, 6, 17, 25, 52, 58, 75, 83, 102, 107].map(i => `<li>${esc(TOPICS[i][0])} 〜 ${esc(TOPICS[i][1])}<small>${PACKS[TOPICS[i][2]]}</small></li>`).join('');
 
 // ---- はじめの遊び方: ?mode=stream（PC）なら配信、?mode=normal ならふだん、ほかは前回のまま ----
 (function init() {
-  const q = location.search;
+  const q = location.search, mm = (/[?&]m=(live|self)\b/.exec(q) || [])[1];
   let m = store.get(MKEY);
-  if (/[?&]mode=normal\b/.test(q)) m = 'room';
-  else if (/[?&]mode=stream\b/.test(q)) { const mm = (/[?&]m=(live|self)\b/.exec(q) || [])[1]; m = mm || (m === 'self' ? 'self' : 'live'); }
-  if (m !== 'live' && m !== 'self') m = 'room';
-  if (m !== 'room' && wide()) {
-    try { const r = JSON.parse(store.get('mo-run') || 'null'); if (r && r.st && r.st.mode === m && Date.now() - r.at < 12 * 3600 * 1000 && r.st.phase !== 'idle') { Object.assign(st, r.st); st.qrBig = false; } } catch (e) {}
-    st.mode = m === 'room' ? 'live' : m;
+  if (mm) { m = mm; store.set(MKEY, m); }
+  if (KKit.stream.on) { if (m !== 'live' && m !== 'self') m = 'live'; } else m = 'room';
+  if (mm || /[?&]mode=/.test(q)) { try { const u = new URL(location.href); u.searchParams.delete('m'); u.searchParams.delete('mode'); history.replaceState(null, '', u.pathname + u.search + u.hash); } catch (e) {} }
+  if (m !== 'room') {
+    st.mode = m;
+    // 続きから（12時間・この端末だけ）。選ぶまでは /view/ に送らない（前の画面のまま）
+    RES = KKit.resume({ key: 'mo-run', box: '#oResume', live: LIVE,
+      valid: d => d && d.mode === m && d.phase && d.phase !== 'idle',
+      label: d => `第${Math.max(1, d.round)}問 / ${ROUNDS}・${d.total}点`,
+      onResume: d => { Object.assign(st, d); st.qrBig = false; if (st.hint) $('#oHint').value = st.hint; renderStage(); },
+      onDiscard: () => resetAll() });
   }
-  if (st.mode !== m && m !== 'room') st.mode = m;
   setMode(m);
 })();
 // テスト用（状態を読むだけ）
