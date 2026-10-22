@@ -709,7 +709,7 @@ function setMode(m, opts) {
   mode = m; store.set(MKEY, m);
   document.body.classList.toggle('stream', m !== 'room');
   $('#viewBar').hidden = m === 'room'; $('#viewSt').hidden = m === 'room';
-  $('#topNote').textContent = m === 'room' ? '登録不要・無料' : '配信モード（広告なし）';
+  $('#topNote').textContent = m === 'room' ? '登録不要・無料' : '配信モード';
   $('#room').hidden = m !== 'room';
   $('#stage').hidden = m === 'room';
   syncChooser();
