@@ -1,5 +1,5 @@
 User-agent: *
 Allow: /
-Disallow: /view/
-Disallow: /a/
+# /view/ などの表示用ページは各ページの <meta name="robots" content="noindex"> で検索に出さない。
+# robots.txt で止めると Google が noindex を読めず、URLだけ登録されるため止めない（2026-11-09 GSC通知「ブロックされましたが、インデックスに登録しました」）。
 Sitemap: https://monosashi.kkpwebninja.com/sitemap.xml
