@@ -636,7 +636,7 @@ function renderRoom() {
   bar.classList.toggle('live', p === 'guess'); bar.tabIndex = p === 'guess' ? 0 : -1;
   if (p === 'setup') { $('#rTitleIn').value = store.get(TKEY) || ''; drawNames(); paintSegs(); }
   if (p === 'pass') {
-    $('#rMsg').innerHTML = `<p class="k">第${R.i + 1}問 / ${R.rounds} ・ ヒント役</p><h2>${nm(who())}に<br>スマホを渡してね</h2><img class="k-pass" src="/kit/img/k-pass-phone.webp" alt="" width="320" height="198"><p>ヒント役だけが画面を見ます。ほかの人は見ないでね。</p><p class="topic">お題: ${esc(L)} 〜 ${esc(Rt)}</p>`;
+    $('#rMsg').innerHTML = `<p class="k">第${R.i + 1}問 / ${R.rounds} ・ ヒント役</p><h2>${nm(who())}に<br>スマホを渡してね</h2><img loading="lazy" class="k-pass" src="/img/shiba-pass.webp" alt="柴犬の忍者" width="480" height="502"><p>ヒント役だけが画面を見ます。ほかの人は見ないでね。</p><p class="topic">お題: ${esc(L)} 〜 ${esc(Rt)}</p>`;
   }
   if (p === 'end') {
     const best = R.log.slice().sort((a, b) => a.d - b.d)[0], max = R.rounds * 4;
